@@ -1,0 +1,150 @@
+{
+  "name": "arabicfmt",
+  "version": "0.1.0",
+  "description": "Arabic-first formatting for numbers, currency, dates and bidirectional text across all 22 Arab League countries — with correct handling of the 2025–2026 Unicode currency-symbol transition (Saudi Riyal U+20C1, UAE Dirham U+20C3, Omani Rial U+20C4).",
+  "keywords": [
+    "arabic",
+    "rtl",
+    "bidi",
+    "currency",
+    "saudi-riyal",
+    "sar",
+    "u+20c1",
+    "hijri",
+    "umm-al-qura",
+    "i18n",
+    "l10n",
+    "intl",
+    "unicode",
+    "cldr",
+    "eastern-arabic-numerals"
+  ],
+  "license": "MIT",
+  "author": "cc1a2b <renhusa9@gmail.com>",
+  "homepage": "https://github.com/cc1a2b/arabicfmt#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cc1a2b/arabicfmt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cc1a2b/arabicfmt/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./currency": {
+      "import": {
+        "types": "./dist/currency/index.d.ts",
+        "default": "./dist/currency/index.js"
+      },
+      "require": {
+        "types": "./dist/currency/index.d.cts",
+        "default": "./dist/currency/index.cjs"
+      }
+    },
+    "./number": {
+      "import": {
+        "types": "./dist/number/index.d.ts",
+        "default": "./dist/number/index.js"
+      },
+      "require": {
+        "types": "./dist/number/index.d.cts",
+        "default": "./dist/number/index.cjs"
+      }
+    },
+    "./date": {
+      "import": {
+        "types": "./dist/date/index.d.ts",
+        "default": "./dist/date/index.js"
+      },
+      "require": {
+        "types": "./dist/date/index.d.cts",
+        "default": "./dist/date/index.cjs"
+      }
+    },
+    "./umalqura": {
+      "import": {
+        "types": "./dist/umalqura/index.d.ts",
+        "default": "./dist/umalqura/index.js"
+      },
+      "require": {
+        "types": "./dist/umalqura/index.d.cts",
+        "default": "./dist/umalqura/index.cjs"
+      }
+    },
+    "./bidi": {
+      "import": {
+        "types": "./dist/bidi/index.d.ts",
+        "default": "./dist/bidi/index.js"
+      },
+      "require": {
+        "types": "./dist/bidi/index.d.cts",
+        "default": "./dist/bidi/index.cjs"
+      }
+    },
+    "./text": {
+      "import": {
+        "types": "./dist/text/index.d.ts",
+        "default": "./dist/text/index.js"
+      },
+      "require": {
+        "types": "./dist/text/index.d.cts",
+        "default": "./dist/text/index.cjs"
+      }
+    },
+    "./validate": {
+      "import": {
+        "types": "./dist/validate/index.d.ts",
+        "default": "./dist/validate/index.js"
+      },
+      "require": {
+        "types": "./dist/validate/index.d.cts",
+        "default": "./dist/validate/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "generate": "tsx scripts/generate-currency-data.ts && tsx scripts/generate-umalqura.ts",
+    "verify": "tsx scripts/verify-currency-data.ts",
+    "prebuild": "npm run verify",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@vitest/coverage-v8": "^4.1.8",
+    "cldr-core": "^48.2.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
