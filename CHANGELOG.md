@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] — 2026-06-13
+
+### Documentation
+- Rebuilt README: live-demo screenshots, a Browser/CDN section (jsDelivr `+esm`), and a refreshed badge line.
+
+### Build
+- Pin `esbuild` to `^0.28.1` via `overrides` to clear dev-tooling advisories. No runtime impact — the package still ships **zero dependencies**, and the public API is unchanged from 0.1.0.
+
 ## [0.1.0] — 2026-06-13
 
 First public release.

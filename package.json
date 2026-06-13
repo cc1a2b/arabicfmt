@@ -1,6 +1,6 @@
 {
   "name": "arabicfmt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Arabic-first formatting for numbers, currency, dates and bidirectional text across all 22 Arab League countries — with correct handling of the 2025–2026 Unicode currency-symbol transition (Saudi Riyal U+20C1, UAE Dirham U+20C3, Omani Rial U+20C4).",
   "keywords": [
     "arabic",
