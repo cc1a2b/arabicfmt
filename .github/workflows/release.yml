@@ -11,8 +11,6 @@ jobs:
     permissions:
       contents: read
       id-token: write # npm provenance attestation
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,9 +20,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      # Publishes only when an NPM_TOKEN secret is configured. Without it the
-      # release still builds and tests (green), but skips publish — so tagging a
-      # version that was already published manually doesn't fail the run.
+      # Only publish when an NPM_TOKEN secret is configured. The check runs
+      # inside a shell step because secrets are available there as env vars,
+      # but are NOT reliably readable in a step-level `if:` expression.
+      - name: Check for npm token
+        id: token
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "set=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "set=false" >> "$GITHUB_OUTPUT"
+            echo "NPM_TOKEN secret not set — skipping publish (package can still be published manually)."
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish to npm
-        if: ${{ env.NODE_AUTH_TOKEN != '' }}
+        if: steps.token.outputs.set == 'true'
         run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
