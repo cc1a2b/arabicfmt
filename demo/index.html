@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>arabicfmt — Arabic formatting for JavaScript, done right</title>
+  <meta name="description" content="Open-source Arabic formatting for JavaScript & TypeScript: correct currency symbols for all 22 Arab countries, Umm al-Qura Hijri dates, number-to-words, tafqit (تفقيط), six plural forms, RTL bidi fixes — zero dependencies." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="#f5f0e6" />
+  <link rel="canonical" href="https://arabicfmt.vercel.app/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://arabicfmt.vercel.app/" />
+  <meta property="og:title" content="arabicfmt — Arabic formatting for JavaScript, done right" />
+  <meta property="og:description" content="Currency for all 22 Arab countries · Umm al-Qura Hijri dates · تفقيط · number-to-words · 6 plural forms · RTL fixes. Zero dependencies, MIT." />
+  <meta property="og:image" content="https://arabicfmt.vercel.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="arabicfmt — Arabic formatting for JavaScript, done right" />
+  <meta name="twitter:image" content="https://arabicfmt.vercel.app/og.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200..700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="bg-pattern" aria-hidden="true"></div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">ع</span>
+        <span class="brand-name">arabicfmt</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#playground">Playground</a>
+        <a href="#why">Errata</a>
+        <a href="#install">Install</a>
+        <a class="btn btn-ghost btn-sm" href="https://github.com/cc1a2b/arabicfmt" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          Star
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============================== MASTHEAD ============================== -->
+    <section class="masthead container">
+      <p class="eyebrow">Open source · MIT · Zero dependencies</p>
+      <h1>Arabic formatting,<br /><em>done right.</em></h1>
+      <p class="hero-ar" lang="ar" dir="rtl">أرقامٌ وعملاتٌ وتواريخُ هجريةٌ ولغةٌ عربيةٌ سليمة — في سطرٍ واحد.</p>
+
+      <div class="dateline" role="note" aria-label="Today's date, Gregorian and Hijri">
+        <span id="date-greg"></span>
+        <span class="orn" aria-hidden="true">۞</span>
+        <strong id="date-hijri" lang="ar" dir="rtl"></strong>
+      </div>
+      <p class="dateline-note">The Hijri half of that dateline was just computed by arabicfmt's Umm al-Qura tables — in your browser.</p>
+
+      <p class="hero-sub">
+        The formatting layer for every Arabic product: correct currency symbols for all
+        22 Arab countries, deterministic Umm al-Qura Hijri dates, number-to-words,
+        cheque-grade <span lang="ar" dir="rtl">تفقيط</span>, six plural forms and RTL text that never breaks.
+      </p>
+
+      <div class="masthead-actions">
+        <div class="install-box" id="install">
+          <code>npm install arabicfmt</code>
+          <button class="btn btn-copy" id="copy-install" type="button">Copy</button>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/cc1a2b/arabicfmt" target="_blank" rel="noopener">★ Star on GitHub</a>
+          <a class="btn btn-ghost" href="#playground">Try it live ↓</a>
+        </div>
+      </div>
+
+      <div class="proof-card" role="img" aria-label="Live examples of arabicfmt output">
+        <div class="proof-head">
+          <span class="proof-stamp" lang="ar">مثالٌ حيّ</span>
+          <em>one function at a time, computed in your browser right now</em>
+        </div>
+        <div class="proof-body" id="term-body">
+          <code class="term-in" id="term-in"></code>
+          <div class="term-out" id="term-out" lang="ar" dir="rtl"></div>
+        </div>
+        <div class="term-dots" id="term-dots"></div>
+      </div>
+    </section>
+
+    <!-- ============================== WHY / ERRATA ============================== -->
+    <section id="why" class="container section">
+      <div class="stats-row">
+        <div class="stat"><strong lang="ar">٢٢</strong><span>currencies of all 22 Arab states — correct symbols &amp; precision</span></div>
+        <div class="stat"><strong lang="ar">٦</strong><span>Arabic plural forms — the full six-form CLDR system</span></div>
+        <div class="stat"><strong lang="ar">١٩٤</strong><span>tests (194), CLDR-verified data on every build</span></div>
+        <div class="stat"><strong lang="ar">٠</strong><span>zero runtime dependencies. ESM + CJS + types</span></div>
+      </div>
+      <p class="stats-note">Everything on this page — 22 currencies, 300 years of Hijri tables, تفقيط, plurals, bidi, validators — ships in <strong>≈ 11 kB</strong> min+gzip. Import one module and pay as little as <strong>0.6 kB</strong>.</p>
+
+      <p class="kicker"><span lang="ar">٠١</span> · the errata column</p>
+      <h2>What everyone else gets wrong</h2>
+      <p class="section-sub">Generic i18n libraries treat Arabic as an afterthought. arabicfmt treats it as the spec.</p>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th>Problem</th><th>Typical library</th><th>arabicfmt</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Saudi riyal symbol</td>
+              <td class="bad">﷼ — that's the <em>Iranian</em> rial (U+FDFC)</td>
+              <td class="good">New U+20C1 sign, with a safe text fallback <bdi lang="ar">ر.س</bdi></td>
+            </tr>
+            <tr>
+              <td>Kuwaiti dinar decimals</td>
+              <td class="bad">1.20 د.ك — loses a digit of real money</td>
+              <td class="good">1.200 <bdi lang="ar">د.ك</bdi> — 3 decimals, CLDR-verified</td>
+            </tr>
+            <tr>
+              <td>Hijri dates</td>
+              <td class="bad">Different output on Node, Chrome, Safari, Hermes</td>
+              <td class="good">Frozen Umm al-Qura tables — identical everywhere</td>
+            </tr>
+            <tr>
+              <td>Plurals</td>
+              <td class="bad">"2 كتابs" — Arabic needs six forms, not two</td>
+              <td class="good">zero / one / two / few / many / other — automatic</td>
+            </tr>
+            <tr>
+              <td>Money in words (تفقيط)</td>
+              <td class="bad">Hand-rolled, grammar breaks on duals</td>
+              <td class="good"><bdi lang="ar">ألفان وخمسمئة ريالٍ فقط لا غير</bdi> — cheque-grade</td>
+            </tr>
+            <tr>
+              <td>Sorting names</td>
+              <td class="bad">.sort() puts <bdi lang="ar">آلاء</bdi> before <bdi lang="ar">ابتسام</bdi> — codepoint order</td>
+              <td class="good">Real Arabic collation — hamza forms treated as one letter</td>
+            </tr>
+            <tr>
+              <td>Phone numbers in RTL</td>
+              <td class="bad">+1 (555)… flips mid-sentence</td>
+              <td class="good">Unicode isolates wrap every LTR run automatically</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================== PLAYGROUND ============================== -->
+    <section id="playground" class="container section">
+      <p class="kicker"><span lang="ar">٠٢</span> · the playground</p>
+      <h2>Try the whole library</h2>
+      <p class="section-sub">Everything below is computed live in your browser by arabicfmt — change anything.</p>
+
+      <div class="grid">
+
+        <!-- Currency studio -->
+        <article class="card wide">
+          <header class="card-head">
+            <h3>Currency studio <span class="ar-tag" lang="ar">العملات</span></h3>
+            <p>Correct symbol, correct precision, for every Arab currency — and the only library tracking the 2025–2026 Unicode currency-sign transition.</p>
+          </header>
+          <div class="controls">
+            <label class="field">
+              <span>Amount</span>
+              <input type="number" id="cur-amount" value="1234.5" step="0.5" />
+            </label>
+            <label class="field">
+              <span>Currency</span>
+              <select id="cur-code"></select>
+            </label>
+            <div class="field">
+              <span>Symbol mode</span>
+              <div class="segmented" id="cur-mode">
+                <button data-v="auto" class="active" type="button">auto</button>
+                <button data-v="new" type="button">new</button>
+                <button data-v="text" type="button">text</button>
+                <button data-v="code" type="button">code</button>
+              </div>
+            </div>
+            <label class="switch-field">
+              <input type="checkbox" id="cur-arab" />
+              <span class="switch"></span>
+              <span>Eastern&nbsp;numerals&nbsp;<bdi lang="ar">٠١٢٣</bdi></span>
+            </label>
+            <label class="switch-field">
+              <input type="checkbox" id="cur-acc" />
+              <span class="switch"></span>
+              <span>Accounting&nbsp;(neg)</span>
+            </label>
+          </div>
+          <div class="output" id="cur-out" lang="ar" dir="rtl"></div>
+          <p class="glyph-note" id="cur-note" hidden></p>
+          <div class="snippet"><code id="cur-snip"></code><button class="btn btn-copy" data-copy="cur-snip" type="button">Copy</button></div>
+
+          <div class="transition" id="transition">
+            <h4>The Unicode currency-sign transition, tracked for you</h4>
+            <div class="transition-rows" id="transition-rows"></div>
+          </div>
+        </article>
+
+        <!-- Tafqit -->
+        <article class="card wide">
+          <header class="card-head">
+            <h3>Spell money for cheques &amp; invoices <span class="ar-tag" lang="ar">التفقيط</span></h3>
+            <p>The legal Arabic wording every invoice and contract needs — with correct singular, dual, plural and accusative agreement, automatically.</p>
+          </header>
+          <div class="controls">
+            <label class="field">
+              <span>Amount</span>
+              <input type="number" id="taf-amount" value="1234.5" step="0.5" />
+            </label>
+            <label class="field">
+              <span>Currency</span>
+              <select id="taf-code"></select>
+            </label>
+            <label class="switch-field">
+              <input type="checkbox" id="taf-suffix" />
+              <span class="switch"></span>
+              <span>Cheque ending&nbsp;<bdi lang="ar">«فقط لا غير»</bdi></span>
+            </label>
+          </div>
+          <div class="output output-serif output-cheque" id="taf-out" lang="ar" dir="rtl"></div>
+          <div class="snippet"><code id="taf-snip"></code><button class="btn btn-copy" data-copy="taf-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Numbers to words -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Numbers → Arabic words <span class="ar-tag" lang="ar">كتابة الأعداد</span></h3>
+            <p>Gender-aware, every scale from صفر to المليارات, plus true ordinals.</p>
+          </header>
+          <div class="controls">
+            <label class="field grow">
+              <span>Number</span>
+              <input type="number" id="words-n" value="1234" step="1" />
+            </label>
+            <div class="field">
+              <span>Gender</span>
+              <div class="segmented" id="words-gender">
+                <button data-v="male" class="active" type="button">masculine</button>
+                <button data-v="female" type="button">feminine</button>
+              </div>
+            </div>
+          </div>
+          <div class="output output-serif" id="words-out" lang="ar" dir="rtl"></div>
+          <div class="mini-row"><span class="mini-label">ordinal</span><bdi class="mini-out" id="ordinal-out" lang="ar"></bdi></div>
+          <div class="snippet"><code id="words-snip"></code><button class="btn btn-copy" data-copy="words-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Counted nouns & fractions -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Counting, inflected <span class="ar-tag" lang="ar">العدد والمعدود</span></h3>
+            <p>العدد والمعدود — the hardest small rule in Arabic grammar. Give <code>countedNoun()</code> any noun's four forms and it picks the right one for any number.</p>
+          </header>
+          <div class="controls">
+            <label class="field">
+              <span>Count</span>
+              <input type="number" id="count-n" value="3" min="1" step="1" />
+            </label>
+            <div class="field">
+              <span>Noun</span>
+              <div class="segmented" id="count-noun">
+                <button data-v="book" class="active" type="button" lang="ar">كتاب</button>
+                <button data-v="hour" type="button" lang="ar">ساعة</button>
+                <button data-v="riyal" type="button" lang="ar">ريال</button>
+              </div>
+            </div>
+          </div>
+          <div class="output output-serif" id="count-out" lang="ar" dir="rtl"></div>
+          <div class="controls">
+            <div class="field">
+              <span>Fraction</span>
+              <div class="segmented" id="frac-num">
+                <button data-v="1" class="active" type="button">1</button>
+                <button data-v="2" type="button">2</button>
+                <button data-v="3" type="button">3</button>
+                <button data-v="5" type="button">5</button>
+              </div>
+            </div>
+            <div class="field">
+              <span>/ over</span>
+              <div class="segmented" id="frac-den">
+                <button data-v="2" type="button">2</button>
+                <button data-v="3" type="button">3</button>
+                <button data-v="4" class="active" type="button">4</button>
+                <button data-v="8" type="button">8</button>
+                <button data-v="10" type="button">10</button>
+              </div>
+            </div>
+          </div>
+          <div class="mini-row"><span class="mini-label">arabicFraction</span><bdi class="mini-out" id="frac-out" lang="ar"></bdi></div>
+          <div class="snippet"><code id="count-snip"></code><button class="btn btn-copy" data-copy="count-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Hijri -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Hijri dates <span class="ar-tag" lang="ar">التقويم الهجري</span></h3>
+            <p>Official Umm al-Qura tables, frozen — the same answer on Node, Chrome, Safari and Hermes. No more off-by-one Ramadan.</p>
+          </header>
+          <div class="controls">
+            <label class="field grow">
+              <span>Gregorian date</span>
+              <input type="date" id="hijri-date" />
+            </label>
+            <div class="field">
+              <span>Numerals</span>
+              <div class="segmented" id="hijri-numerals">
+                <button data-v="latn" class="active" type="button">123</button>
+                <button data-v="arab" type="button" lang="ar">١٢٣</button>
+              </div>
+            </div>
+            <div class="field">
+              <span>Language</span>
+              <div class="segmented" id="hijri-locale">
+                <button data-v="ar" class="active" type="button">العربية</button>
+                <button data-v="en" type="button">English</button>
+              </div>
+            </div>
+          </div>
+          <div class="output" id="hijri-out" dir="rtl" lang="ar"></div>
+          <div class="mini-row"><span class="mini-label">toHijri()</span><code class="mini-out" id="hijri-struct"></code></div>
+          <div class="mini-row"><span class="mini-label">fromHijri()</span><code class="mini-out" id="hijri-roundtrip"></code></div>
+          <div class="snippet"><code id="hijri-snip"></code><button class="btn btn-copy" data-copy="hijri-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Plurals -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Six plural forms <span class="ar-tag" lang="ar">الجموع</span></h3>
+            <p>Arabic has six grammatical plural categories. Drag the slider — watch the form change.</p>
+          </header>
+          <div class="controls">
+            <input type="range" id="plural-n" min="0" max="125" value="5" class="slider grow" />
+            <output class="slider-val" id="plural-val">5</output>
+          </div>
+          <div class="chip-row" id="plural-chips">
+            <span data-f="zero">zero</span><span data-f="one">one</span><span data-f="two">two</span>
+            <span data-f="few">few</span><span data-f="many">many</span><span data-f="other">other</span>
+          </div>
+          <div class="output" id="plural-out" lang="ar" dir="rtl"></div>
+          <div class="snippet"><code id="plural-snip"></code><button class="btn btn-copy" data-copy="plural-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Parse it back -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Parse it back <span class="ar-tag" lang="ar">قراءة الأرقام</span></h3>
+            <p>Your users type <bdi lang="ar">١٬٢٣٤٫٥٦</bdi> with Arabic separators — and your API wants a number. Formatting needs to work in both directions.</p>
+          </header>
+          <div class="controls">
+            <input type="text" id="parse-in" class="grow mono" dir="auto" value="١٬٢٣٤٫٥٦ ر.س" spellcheck="false" />
+          </div>
+          <div class="chip-row chip-samples" id="parse-samples">
+            <button type="button" lang="ar">١٬٢٣٤٫٥٦ ر.س</button>
+            <button type="button">(500.00 SAR)</button>
+            <button type="button" lang="ar">٢٬٥٠٠ د.ك</button>
+            <button type="button">1,234.56</button>
+          </div>
+          <div class="kv">
+            <div><span class="mini-label">parseCurrency</span><code id="parse-cur"></code></div>
+            <div><span class="mini-label">parseNumber</span><code id="parse-num"></code></div>
+            <div><span class="mini-label">toLatinDigits</span><code id="parse-latin"></code></div>
+            <div><span class="mini-label">toArabicDigits</span><bdi id="parse-arab" lang="ar"></bdi></div>
+          </div>
+          <div class="snippet"><code id="parse-snip"></code><button class="btn btn-copy" data-copy="parse-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Lists & sorting -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Sort like a dictionary <span class="ar-tag" lang="ar">الترتيب والعطف</span></h3>
+            <p><code>.sort()</code> orders by codepoint, so <bdi lang="ar">آلاء</bdi> lands before <bdi lang="ar">ابتسام</bdi>. Arabic collation knows آ أ إ ا are one letter.</p>
+          </header>
+          <div class="controls">
+            <input type="text" id="sort-in" class="grow" dir="rtl" lang="ar" value="إيمان، أحمد، آلاء، ابتسام" />
+          </div>
+          <div class="bidi-panes">
+            <div class="bidi-pane">
+              <span class="pane-label bad-label">.sort()</span>
+              <div class="pane-text" id="sort-naive" lang="ar" dir="rtl"></div>
+            </div>
+            <div class="bidi-pane">
+              <span class="pane-label good-label">sortArabic()</span>
+              <div class="pane-text" id="sort-good" lang="ar" dir="rtl"></div>
+            </div>
+          </div>
+          <div class="mini-row">
+            <span class="mini-label">formatList</span>
+            <div class="segmented seg-sm" id="list-type">
+              <button data-v="conjunction" class="active" type="button">و and</button>
+              <button data-v="disjunction" type="button">أو or</button>
+            </div>
+          </div>
+          <div class="output output-sm" id="list-out" lang="ar" dir="rtl"></div>
+          <div class="snippet"><code id="sort-snip"></code><button class="btn btn-copy" data-copy="sort-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Bidi -->
+        <article class="card">
+          <header class="card-head">
+            <h3>RTL rescue <span class="ar-tag" lang="ar">إصلاح الاتجاه</span></h3>
+            <p>Phone numbers and Latin words scramble Arabic sentences. One function fixes the whole string.</p>
+          </header>
+          <div class="controls">
+            <input type="text" id="bidi-in" class="grow" dir="auto"
+                   value="اتصل على +1 (555) 234-5678 الآن" />
+          </div>
+          <div class="bidi-panes">
+            <div class="bidi-pane">
+              <span class="pane-label bad-label">without</span>
+              <div class="pane-text" id="bidi-before" lang="ar" dir="rtl"></div>
+            </div>
+            <div class="bidi-pane">
+              <span class="pane-label good-label">isolateForeign()</span>
+              <div class="pane-text" id="bidi-after" lang="ar" dir="rtl"></div>
+            </div>
+          </div>
+          <div class="snippet"><code id="bidi-snip">isolateForeign(text)  // wraps every LTR run in FSI…PDI</code><button class="btn btn-copy" data-copy="bidi-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Everyday formatters -->
+        <article class="card wide">
+          <header class="card-head">
+            <h3>Everyday formatters <span class="ar-tag" lang="ar">يوميات المطوّر</span></h3>
+            <p>The strings every app needs, with grammar no template can fake.</p>
+          </header>
+          <div class="quad">
+            <div class="quad-cell">
+              <span class="mini-label">formatRelativeTime</span>
+              <div class="segmented seg-sm" id="rel-pick">
+                <button data-v="-3d" class="active" type="button">3 days ago</button>
+                <button data-v="-2h" type="button">−2 h</button>
+                <button data-v="45m" type="button">+45 min</button>
+                <button data-v="7d" type="button">+7 days</button>
+              </div>
+              <bdi class="quad-out" id="rel-out" lang="ar"></bdi>
+            </div>
+            <div class="quad-cell">
+              <span class="mini-label">formatDuration</span>
+              <div class="segmented seg-sm" id="dur-pick">
+                <button data-v="90000" type="button">90 s</button>
+                <button data-v="7500000" class="active" type="button">2 h 5 m</button>
+                <button data-v="172800000" type="button">2 days</button>
+                <button data-v="500" type="button">500 ms</button>
+              </div>
+              <bdi class="quad-out" id="dur-out" lang="ar"></bdi>
+            </div>
+            <div class="quad-cell">
+              <span class="mini-label">formatFileSize</span>
+              <div class="segmented seg-sm" id="size-pick">
+                <button data-v="1536" type="button">1 536</button>
+                <button data-v="5242880" class="active" type="button">5 MB</button>
+                <button data-v="1099511627776" type="button">1 TB</button>
+              </div>
+              <bdi class="quad-out" id="size-out" lang="ar"></bdi>
+            </div>
+            <div class="quad-cell">
+              <span class="mini-label">formatCompact</span>
+              <div class="segmented seg-sm" id="compact-pick">
+                <button data-v="1500000" class="active" type="button">1.5 M</button>
+                <button data-v="2400" type="button">2 400</button>
+                <button data-v="3100000000" type="button">3.1 B</button>
+              </div>
+              <bdi class="quad-out" id="compact-out" lang="ar"></bdi>
+            </div>
+            <div class="quad-cell">
+              <span class="mini-label">formatPercent</span>
+              <div class="segmented seg-sm" id="pct-pick">
+                <button data-v="0.42" class="active" type="button">0.42</button>
+                <button data-v="0.075" type="button">0.075</button>
+                <button data-v="1.25" type="button">1.25</button>
+              </div>
+              <bdi class="quad-out" id="pct-out" lang="ar"></bdi>
+            </div>
+            <div class="quad-cell">
+              <span class="mini-label">formatNumber</span>
+              <div class="segmented seg-sm" id="num-pick">
+                <button data-v="1234567.89" class="active" type="button">1 234 567.89</button>
+                <button data-v="3.14159" type="button">π</button>
+                <button data-v="-42" type="button">−42</button>
+              </div>
+              <bdi class="quad-out" id="num-out" lang="ar"></bdi>
+            </div>
+          </div>
+        </article>
+
+        <!-- Text tools -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Text intelligence <span class="ar-tag" lang="ar">معالجة النصوص</span></h3>
+            <p>Search that survives diacritics and hamza variants; slugs that survive Arabic.</p>
+          </header>
+          <div class="controls">
+            <input type="text" id="text-in" class="grow" dir="rtl" lang="ar" value="مُؤسَّسة القاهرة الكُبرى 2026" />
+          </div>
+          <div class="kv">
+            <div><span class="mini-label">stripTashkeel</span><bdi id="text-strip" lang="ar"></bdi></div>
+            <div><span class="mini-label">normalizeForSearch</span><bdi id="text-norm" lang="ar"></bdi></div>
+            <div><span class="mini-label">transliterate</span><code id="text-translit"></code></div>
+            <div><span class="mini-label">slugify</span><code id="text-slug"></code></div>
+          </div>
+          <div class="snippet"><code id="text-snip"></code><button class="btn btn-copy" data-copy="text-snip" type="button">Copy</button></div>
+        </article>
+
+        <!-- Validation -->
+        <article class="card">
+          <header class="card-head">
+            <h3>Validation <span class="ar-tag" lang="ar">التحقق</span></h3>
+            <p>Real ISO 7064 and Luhn checksums — not regexes that wave bad numbers through.</p>
+          </header>
+          <div class="controls stack">
+            <label class="field grow">
+              <span>IBAN <button class="linklike" id="iban-demo" type="button">try a valid one</button></span>
+              <input type="text" id="iban-in" class="mono" placeholder="SA03 8000 0000 6080 1016 7519" spellcheck="false" />
+            </label>
+            <div class="validate-row" id="iban-result"></div>
+            <label class="field grow">
+              <span>Saudi ID / Iqama <button class="linklike" id="sid-demo" type="button">try one</button></span>
+              <input type="text" id="sid-in" class="mono" placeholder="1012345672" spellcheck="false" />
+            </label>
+            <div class="validate-row" id="sid-result"></div>
+          </div>
+          <div class="snippet"><code id="val-snip">isValidIBAN(iban) && saudiIdType(id)  // "citizen" | "resident"</code><button class="btn btn-copy" data-copy="val-snip" type="button">Copy</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================== FOOTER CTA ============================== -->
+    <section class="container section closing">
+      <span class="orn closing-orn" aria-hidden="true">۞</span>
+      <h2 lang="ar" dir="rtl">جاهز؟</h2>
+      <p class="section-sub">Every Arabic string on this page was rendered live, in your browser, by arabicfmt.</p>
+      <div class="install-box install-center">
+        <code>npm install arabicfmt</code>
+        <button class="btn btn-copy" id="copy-install-2" type="button">Copy</button>
+      </div>
+      <div class="cta-row cta-center">
+        <a class="btn btn-primary" href="https://github.com/cc1a2b/arabicfmt" target="_blank" rel="noopener">★ Star on GitHub</a>
+        <a class="btn btn-ghost" href="https://github.com/cc1a2b/arabicfmt#readme" target="_blank" rel="noopener">Read the docs</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p class="colophon">Set in Amiri &amp; Readex Pro · printed live in your browser by arabicfmt</p>
+      <span>MIT © <a href="https://github.com/cc1a2b" target="_blank" rel="noopener">cc1a2b</a> · open source <bdi lang="ar">وقفٌ للمطوّرين</bdi></span>
+      <span class="footer-links">
+        <a href="https://github.com/cc1a2b/arabicfmt" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/cc1a2b/arabicfmt/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://vercel.com/new/clone?repository-url=https://github.com/cc1a2b/arabicfmt" target="_blank" rel="noopener">Deploy your own ▲</a>
+      </span>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
