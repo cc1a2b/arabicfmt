@@ -415,6 +415,26 @@ code.mini-out { font-family: var(--font-mono); font-size: 13px; color: var(--red
 .validate-row .nope { color: var(--red-deep); }
 .validate-row code { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-soft); }
 
+/* faq */
+.faq { display: grid; gap: 10px; }
+.faq details {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 4px 18px;
+}
+.faq summary {
+  cursor: pointer; padding: 12px 0; font-weight: 500; font-size: 15.5px;
+  list-style: none; display: flex; align-items: center; gap: 10px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::before {
+  content: "+"; color: var(--red); font-family: var(--font-serif); font-size: 20px;
+  line-height: 1; width: 16px; flex-shrink: 0;
+}
+.faq details[open] summary::before { content: "–"; }
+.faq details[open] summary { border-bottom: 1px dotted var(--line); }
+.faq p { margin: 12px 0 14px; color: var(--ink-soft); font-size: 14.5px; line-height: 1.7; }
+.faq code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-deep); padding: 1px 5px; border-radius: 3px; color: var(--red-deep); }
+
 /* closing */
 .closing { text-align: center; padding-bottom: 96px; }
 .closing-orn { display: block; font-size: 30px; margin-bottom: 10px; }

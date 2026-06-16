@@ -718,6 +718,24 @@ The complete Arabic formatting stack costs less than a single small image.
 
 ---
 
+## Full API reference
+
+Every public function, by module. Full signatures and options are in the
+sections above and in the bundled TypeScript types.
+
+| Module | Functions |
+|---|---|
+| `arabicfmt/currency` | `formatCurrency` · `spellCurrency` · `getCurrencyInfo` · `resolveCurrencySymbol` |
+| `arabicfmt/number` | `formatNumber` · `formatPercent` · `formatCompact` · `parseNumber` · `parseCurrency` · `toArabicDigits` · `toLatinDigits` · `arabicToWords` · `arabicOrdinal` · `arabicFraction` · `countedNoun` · `formatDuration` · `formatFileSize` · `formatRelativeTime` |
+| `arabicfmt/umalqura` | `formatHijri` · `toHijri` · `fromHijri` · `gregorianToUmalqura` · `umalquraToGregorian` |
+| `arabicfmt/date` | `formatHijri` · `toHijri` · `fromHijri` *(tabular core)* |
+| `arabicfmt/text` | `stripTashkeel` · `removeTatweel` · `normalizeArabic` · `normalizeForSearch` · `arabicPlural` · `arabicPluralForm` · `sortArabic` · `compareArabic` · `createArabicCollator` · `formatList` · `transliterate` · `slugify` |
+| `arabicfmt/bidi` | `isolateForeign` · `isolate` · `wrapLTR` · `wrapRTL` · `stripBidi` · `detectDirection` · `isRTL` · `charDirection` |
+| `arabicfmt/validate` | `isValidIBAN` · `formatIBAN` · `normalizeIBAN` · `isValidSaudiId` · `saudiIdType` |
+| `arabicfmt` *(root)* | re-exports everything above + `detectLocale` |
+
+---
+
 ## Engineering
 
 | | |

@@ -21,6 +21,56 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200..700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareSourceCode",
+        "name": "arabicfmt",
+        "description": "Arabic-first formatting for JavaScript & TypeScript: correct currency symbols for all 22 Arab League countries (including the 2025–2026 Unicode currency-symbol transition), Umm al-Qura Hijri dates, Arabic number-to-words, تفقيط, six plural forms, RTL/bidi fixes, collation and validation. Zero runtime dependencies.",
+        "codeRepository": "https://github.com/cc1a2b/arabicfmt",
+        "programmingLanguage": ["JavaScript", "TypeScript"],
+        "runtimePlatform": ["Node.js", "Browser", "Deno", "Bun", "React Native"],
+        "license": "https://opensource.org/licenses/MIT",
+        "url": "https://arabicfmt.vercel.app/",
+        "author": { "@type": "Person", "name": "cc1a2b", "url": "https://github.com/cc1a2b" },
+        "keywords": "arabic, i18n, rtl, bidi, currency, saudi riyal, U+20C1, hijri, umm al-qura, tafqit, number to words, eastern arabic numerals, cldr"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I show the Saudi Riyal symbol correctly in JavaScript?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Use arabicfmt: formatCurrency(1234.5, { currency: 'SAR' }). It outputs the correct riyal — the new Unicode sign U+20C1 or the safe text symbol ر.س — instead of ﷼ (U+FDFC), which is actually the Iranian rial." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I get a Hijri (Islamic) date that is the same on every browser and Node?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Use arabicfmt/umalqura: formatHijri(new Date()). It uses frozen official Umm al-Qura tables, so the result is identical on Node, Chrome, Safari and React Native — no off-by-one Ramadan." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I convert Arabic (Eastern) numerals like ١٢٣ back to a JavaScript number?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Use arabicfmt: parseNumber('١٬٢٣٤٫٥٦') returns 1234.56. parseInt does not handle Eastern Arabic digits or Arabic separators." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I spell a money amount in Arabic words for a cheque or invoice (تفقيط)?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Use arabicfmt: spellCurrency(1234.5, { currency: 'SAR' }) returns the legal Arabic wording with correct singular, dual, plural and accusative agreement." }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I stop phone numbers and Latin words from scrambling Arabic (RTL) sentences?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Use arabicfmt/bidi: isolateForeign(text) wraps every left-to-right run in Unicode isolate characters (FSI…PDI) so the sentence stays readable." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="bg-pattern" aria-hidden="true"></div>
@@ -524,6 +574,39 @@
           <div class="snippet"><code id="val-snip">isValidIBAN(iban) && saudiIdType(id)  // "citizen" | "resident"</code><button class="btn btn-copy" data-copy="val-snip" type="button">Copy</button></div>
         </article>
 
+      </div>
+    </section>
+
+    <!-- ============================== FAQ (SEO) ============================== -->
+    <section id="faq" class="container section">
+      <p class="kicker"><span lang="ar">٠٣</span> · common questions</p>
+      <h2>Frequently asked</h2>
+      <p class="section-sub">The Arabic-formatting problems developers hit most — and the one-line fix.</p>
+      <div class="faq">
+        <details open>
+          <summary>How do I show the Saudi Riyal symbol correctly in JavaScript?</summary>
+          <p>Use <code>formatCurrency(1234.5, { currency: "SAR" })</code>. arabicfmt outputs the correct riyal — the new Unicode sign <strong>U+20C1</strong> or the safe text symbol <bdi lang="ar">ر.س</bdi> — instead of <bdi>﷼</bdi> (U+FDFC), which is actually the <em>Iranian</em> rial.</p>
+        </details>
+        <details>
+          <summary>How do I get a Hijri date that is identical on every browser and Node?</summary>
+          <p>Use <code>formatHijri(new Date())</code> from <code>arabicfmt/umalqura</code>. It uses frozen official Umm al-Qura tables, so the output is the same on Node, Chrome, Safari and React Native — no off-by-one Ramadan.</p>
+        </details>
+        <details>
+          <summary>How do I convert Arabic numerals like <bdi lang="ar">١٢٣</bdi> back to a JavaScript number?</summary>
+          <p>Use <code>parseNumber("١٬٢٣٤٫٥٦")</code> → <code>1234.56</code>. Plain <code>parseInt</code> can't read Eastern Arabic digits or Arabic separators.</p>
+        </details>
+        <details>
+          <summary>How do I spell a money amount in Arabic words for a cheque (<bdi lang="ar">تفقيط</bdi>)?</summary>
+          <p>Use <code>spellCurrency(1234.5, { currency: "SAR" })</code> — it returns the legal Arabic wording with correct singular, dual, plural and accusative agreement.</p>
+        </details>
+        <details>
+          <summary>How do I stop phone numbers from scrambling Arabic (RTL) sentences?</summary>
+          <p>Use <code>isolateForeign(text)</code> from <code>arabicfmt/bidi</code>. It wraps every left-to-right run in Unicode isolates (FSI…PDI) so the sentence stays readable.</p>
+        </details>
+        <details>
+          <summary>Is arabicfmt really zero-dependency, and does it work in the browser?</summary>
+          <p>Yes — zero runtime dependencies, ESM + CJS, full TypeScript types, ~11 kB. Works in Node, the browser (incl. via CDN: <code>https://cdn.jsdelivr.net/npm/arabicfmt/+esm</code>), Deno, Bun and React Native.</p>
+        </details>
       </div>
     </section>
 

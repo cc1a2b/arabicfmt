@@ -1,0 +1,64 @@
+# arabicfmt
+
+> Arabic-first formatting for JavaScript & TypeScript. Correct currency for all
+> 22 Arab League countries (including the 2025–2026 Unicode currency-symbol
+> transition: Saudi Riyal U+20C1, UAE Dirham U+20C3, Omani Rial U+20C4),
+> deterministic Umm al-Qura Hijri dates, Arabic number-to-words, تفقيط (spell
+> money for cheques), the six CLDR plural forms, RTL/bidi fixes, Arabic
+> collation, transliteration/slugs, and IBAN / Saudi-ID validation.
+> Zero runtime dependencies. ESM + CJS. Full TypeScript types. ~11 kB min+gzip.
+
+## Install
+- npm: `npm install arabicfmt`
+- Browser/CDN (no build): `import { formatCurrency } from "https://cdn.jsdelivr.net/npm/arabicfmt/+esm"`
+- Subpath imports (tree-shakeable): arabicfmt/currency, /number, /date, /umalqura, /bidi, /text, /validate
+
+## Currency — arabicfmt/currency
+- `formatCurrency(value, { currency, numerals?, symbolMode?, accounting?, locale? })`
+  - formatCurrency(1234.5, { currency: "SAR", numerals: "arab" }) // "١٬٢٣٤٫٥٠ ر.س"
+  - formatCurrency(1.2, { currency: "KWD" }) // "1.200 د.ك" (3 decimals, CLDR-correct)
+  - symbolMode: "auto" | "new" (U+20C1 etc.) | "text" (ر.س) | "code" (SAR)
+- `spellCurrency(value, { currency, suffix? })` // تفقيط: "ألف ومئتان وأربعة وثلاثون ريالاً وخمسون هللةً"
+- `getCurrencyInfo(code)` // symbols, precision, Unicode transition metadata
+
+## Numbers — arabicfmt/number
+- `arabicToWords(n, { gender? })` // arabicToWords(1234) → "ألف ومئتان وأربعة وثلاثون"
+- `arabicOrdinal(n, { gender? })` // arabicOrdinal(25, { gender: "female" }) → "الخامسة والعشرون"
+- `arabicFraction(num, den)` // arabicFraction(3, 4) → "ثلاثة أرباع"
+- `countedNoun(n, forms)` // applies Arabic العدد والمعدود agreement to any noun
+- `formatNumber(n, opts)`, `formatPercent(ratio, opts)`, `formatCompact(n, opts)` // "١٫٢ مليون"
+- `formatDuration(ms)` // 7_500_000 → "ساعتان وخمس دقائق"
+- `formatFileSize(bytes)` // 1536 → "1.5 كيلوبايت"
+- `formatRelativeTime(date)` // "قبل ٣ أيام"
+- `parseNumber(str)` / `parseCurrency(str)` // "١٬٢٣٤٫٥٦" → 1234.56
+- `toArabicDigits(str)` / `toLatinDigits(str)` // Eastern ↔ Western digits
+
+## Dates (Hijri) — arabicfmt/umalqura (accurate) or arabicfmt/date (tabular, tiny)
+- `formatHijri(date, { numerals?, locale? })` // → "٢٧ ذو الحجة ١٤٤٧ هـ" (Umm al-Qura, deterministic)
+- `toHijri(date)` → { year, month, day }
+- `fromHijri(year, month, day)` → Date
+
+## Text — arabicfmt/text
+- `arabicPlural(n, forms)` / `arabicPluralForm(n)` // 6 CLDR forms: zero/one/two/few/many/other
+- `normalizeForSearch(s)`, `stripTashkeel(s)`, `removeTatweel(s)`, `normalizeArabic(s)`
+- `sortArabic(arr)` / `compareArabic(a, b)` / `createArabicCollator(opts)` // dictionary-correct order
+- `formatList(items, { type? })` // "أحمد ومحمد وعلي" / disjunction: "... أو ..."
+- `transliterate(s)` / `slugify(s)` // slugify("مدينة نصر") → "mdynh-nsr"
+
+## Bidi / RTL — arabicfmt/bidi
+- `isolateForeign(text)` // wraps LTR runs (phone numbers, Latin) in FSI…PDI so RTL text stops scrambling
+- `detectDirection(s)`, `isRTL(s)`, `wrapLTR`, `wrapRTL`, `stripBidi`
+
+## Validation — arabicfmt/validate
+- `isValidIBAN(iban)` / `formatIBAN(iban)` // ISO 7064 mod-97
+- `isValidSaudiId(id)` / `saudiIdType(id)` // Luhn; returns "citizen" | "resident"
+
+## Notes for code generation
+- Always pass the ISO 4217 currency code (e.g. "SAR", "AED", "KWD") to formatCurrency.
+- For Eastern-Arabic digits anywhere, pass `numerals: "arab"`.
+- The package has ZERO runtime dependencies; safe in Node, browser, Deno, Bun, React Native.
+
+## Links
+- README / full docs: https://github.com/cc1a2b/arabicfmt#readme
+- Live demo: https://arabicfmt.vercel.app
+- npm: https://www.npmjs.com/package/arabicfmt
