@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] — 2026-06-13
+
+Docs-only release; the library code and public API are unchanged from 0.1.1.
+
+### Documentation
+- Add a full API reference table to the README (every exported function, by module).
+- Add `llms.txt` and an FAQ + JSON-LD to the demo for AI/search discoverability.
+- Version-proof the CDN examples (unversioned jsDelivr `+esm` URL).
+- Add CONTRIBUTING, SECURITY, and issue/PR templates.
+
 ## [0.1.1] — 2026-06-13
 
 ### Documentation

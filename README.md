@@ -62,14 +62,14 @@ Every release is mirrored on the [jsDelivr](https://www.jsdelivr.com/package/npm
 
 ```html
 <script type="module">
-  import { formatCurrency, formatHijri } from "https://cdn.jsdelivr.net/npm/arabicfmt@0.1.0/+esm";
+  import { formatCurrency, formatHijri } from "https://cdn.jsdelivr.net/npm/arabicfmt/+esm";
 
   console.log(formatCurrency(1234.5, { currency: "SAR", numerals: "arab" })); // ١٬٢٣٤٫٥٠ ر.س
   console.log(formatHijri(new Date(), { numerals: "arab" }));                 // ٢٧ ذو الحجة ١٤٤٧ هـ
 </script>
 ```
 
-Subpaths work too — e.g. `https://cdn.jsdelivr.net/npm/arabicfmt@0.1.0/dist/currency/index.js` for just the currency module.
+Subpaths work too — e.g. `https://cdn.jsdelivr.net/npm/arabicfmt/dist/currency/index.js` for just the currency module. Pin a version for production, e.g. `arabicfmt@0.1`.
 
 ---
 
