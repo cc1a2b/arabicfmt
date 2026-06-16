@@ -1,0 +1,20 @@
+{
+  "name": "arabicfmt-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable examples demonstrating every arabicfmt feature.",
+  "type": "module",
+  "scripts": {
+    "currency": "node currency.mjs",
+    "numbers": "node numbers.mjs",
+    "words": "node words.mjs",
+    "dates": "node dates.mjs",
+    "text": "node text.mjs",
+    "bidi": "node bidi.mjs",
+    "validate": "node validate.mjs",
+    "all": "node currency.mjs && node numbers.mjs && node words.mjs && node dates.mjs && node text.mjs && node bidi.mjs && node validate.mjs"
+  },
+  "dependencies": {
+    "arabicfmt": "^0.1.2"
+  }
+}

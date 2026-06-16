@@ -1,0 +1,45 @@
+{
+  "name": "arabicfmt-mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol (MCP) server exposing arabicfmt's Arabic-first formatting tools (currency, Hijri dates, numbers, bidi text, validation) to AI agents like Claude and Cursor.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "arabic",
+    "arabicfmt",
+    "rtl",
+    "hijri",
+    "currency",
+    "claude",
+    "cursor"
+  ],
+  "license": "MIT",
+  "author": "cc1a2b",
+  "type": "module",
+  "bin": {
+    "arabicfmt-mcp": "index.js"
+  },
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "tools.js",
+    "README.md"
+  ],
+  "homepage": "https://github.com/cc1a2b/arabicfmt#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cc1a2b/arabicfmt.git",
+    "directory": "mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/cc1a2b/arabicfmt/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "arabicfmt": "^0.1.2",
+    "zod": "^3.25 || ^4.0"
+  }
+}
