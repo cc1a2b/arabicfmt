@@ -1,0 +1,17 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "arabicfmt",
+  "description": "Arabic-first formatting for JavaScript & TypeScript: currency for all 22 Arab League countries (including the Unicode currency-symbol transition — Saudi Riyal U+20C1, UAE Dirham U+20C3, Omani Rial U+20C4), Umm al-Qura Hijri dates, Arabic number-to-words, تفقيط, six CLDR plural forms, RTL/bidi fixes, collation, transliteration and IBAN/Saudi-ID validation. Zero runtime dependencies.",
+  "folders": ["src"],
+  "excludeFolders": ["dist", "node_modules", "demo", "test", "scripts", "assets", ".github"],
+  "excludeFiles": ["package-lock.json"],
+  "rules": [
+    "arabicfmt has ZERO runtime dependencies — never suggest adding one.",
+    "Use tree-shakeable subpath imports: arabicfmt/currency, /number, /date, /umalqura, /bidi, /text, /validate. The root 'arabicfmt' re-exports everything.",
+    "Always pass an ISO 4217 currency code (e.g. \"SAR\", \"AED\", \"KWD\") to formatCurrency() and spellCurrency().",
+    "For Eastern Arabic-Indic digits in any output, pass the option numerals: \"arab\".",
+    "For deterministic Hijri dates that are identical across Node, browsers and React Native, import formatHijri/toHijri from arabicfmt/umalqura.",
+    "To fix RTL text where phone numbers or Latin words scramble the order, use isolateForeign() from arabicfmt/bidi.",
+    "Works in Node, the browser (incl. via jsDelivr CDN /+esm), Deno, Bun and React Native."
+  ]
+}
