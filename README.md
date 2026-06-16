@@ -736,6 +736,34 @@ sections above and in the bundled TypeScript types.
 
 ---
 
+## MCP server — use arabicfmt from AI agents
+
+AI agents (Claude Desktop, Claude Code, Cursor) can call arabicfmt directly through the
+[`arabicfmt-mcp`](https://www.npmjs.com/package/arabicfmt-mcp) Model Context Protocol server —
+17 tools (`format_currency`, `spell_currency`, `format_hijri`, `arabic_to_words`,
+`isolate_foreign`, `validate_iban`, …). Add it to your client's `mcpServers` config:
+
+```json
+{
+  "mcpServers": {
+    "arabicfmt": { "command": "npx", "args": ["-y", "arabicfmt-mcp"] }
+  }
+}
+```
+
+Source and full tool list: [`mcp/`](./mcp).
+
+## Examples
+
+Runnable scripts for every feature live in [`examples/`](./examples):
+
+```sh
+cd examples && npm install
+node currency.mjs   # or numbers / words / dates / text / bidi / validate
+```
+
+---
+
 ## Engineering
 
 | | |
