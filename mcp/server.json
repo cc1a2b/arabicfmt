@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.cc1a2b/arabicfmt-mcp",
-  "description": "Arabic-first formatting tools for AI agents: currency for all 22 Arab League countries (Saudi riyal U+20C1), Umm al-Qura Hijri dates, number-to-words (تفقيط), Eastern Arabic numerals, RTL/bidi fixes, transliteration and IBAN/Saudi-ID validation.",
+  "description": "Arabic formatting: 22 Arab currencies (Saudi riyal U+20C1), Hijri dates, تفقيط, RTL/bidi fixes.",
   "repository": {
     "url": "https://github.com/cc1a2b/arabicfmt",
     "source": "github"
