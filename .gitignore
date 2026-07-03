@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+*.log
+.DS_Store
+.idea
+.vscode
+*.tgz
+
+# secrets / credentials — never commit
+.npmrc
+.env
+.env.*
+*.pem
+*.key

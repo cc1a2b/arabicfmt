@@ -1,0 +1,11 @@
+# Smithery configuration for arabicfmt-mcp
+# Docs: https://smithery.ai/docs/build/project-config
+# This is a local (stdio) server distributed on npm — Smithery launches it via npx.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+    required: []
+  commandFunction: |-
+    () => ({ command: "npx", args: ["-y", "arabicfmt-mcp"] })
