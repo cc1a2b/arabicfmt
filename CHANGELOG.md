@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] — 2026-07-06
+
+MCP and release-infrastructure release; the library's runtime behavior and
+public API are unchanged from 0.1.3.
+
+### MCP
+- Publish `arabicfmt-mcp` to the official MCP Registry as
+  `io.github.cc1a2b/arabicfmt-mcp` (`mcp/server.json` plus a GitHub-OIDC
+  publish workflow).
+- Add a root `Dockerfile` that runs the MCP server over stdio so registry
+  inspectors (e.g. Glama) can introspect it.
+
 ## [0.1.3] — 2026-07-03
 
 Docs-and-examples release; runtime behavior and the public API are unchanged
