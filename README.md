@@ -13,7 +13,7 @@ correct for all **22 Arab League countries**, with **zero dependencies** and ful
 
 <a href="https://arabicfmt.vercel.app"><img src="https://raw.githubusercontent.com/cc1a2b/arabicfmt/main/assets/hero.png" alt="arabicfmt — interactive Arabic formatting playground" width="820" /></a>
 
-**[📦 npm](https://www.npmjs.com/package/arabicfmt) · [🕹 Live demo](https://arabicfmt.vercel.app) · [⭐ GitHub](https://github.com/cc1a2b/arabicfmt)**
+**[npm](https://www.npmjs.com/package/arabicfmt) · [Live demo](https://arabicfmt.vercel.app) · [GitHub](https://github.com/cc1a2b/arabicfmt)**
 
 </div>
 
@@ -798,7 +798,7 @@ as its `auto` default by design.
 
 ---
 
-## 🌍 Live demo
+## Live demo
 
 **[arabicfmt.vercel.app](https://arabicfmt.vercel.app)** — the whole library, interactive and computed live in your browser. Change any input and watch the Arabic update in real time: currency studio, تفقيط, Hijri converter, plurals, RTL fixes and more.
 
@@ -828,7 +828,7 @@ Issues and pull requests are welcome on [GitHub](https://github.com/cc1a2b/arabi
 
 Built and maintained by **[cc1a2b](https://github.com/cc1a2b)**.
 
-If arabicfmt saves you time, please **[⭐ star it on GitHub](https://github.com/cc1a2b/arabicfmt)** — it helps other Arabic developers find it. Explore my **[other open-source projects](https://github.com/cc1a2b?tab=repositories)**, or open an [issue](https://github.com/cc1a2b/arabicfmt/issues) with ideas, bugs and feature requests.
+If arabicfmt saves you time, please **[star it on GitHub](https://github.com/cc1a2b/arabicfmt)** — it helps other Arabic developers find it. Explore my **[other open-source projects](https://github.com/cc1a2b?tab=repositories)**, or open an [issue](https://github.com/cc1a2b/arabicfmt/issues) with ideas, bugs and feature requests.
 
 <div align="center">
 <sub>Built for Arabic-first software · <bdi lang="ar">وقفٌ للمطوّرين</bdi></sub>
