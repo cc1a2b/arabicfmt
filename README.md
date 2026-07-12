@@ -831,5 +831,5 @@ Built and maintained by **[cc1a2b](https://github.com/cc1a2b)**.
 If arabicfmt saves you time, please **[star it on GitHub](https://github.com/cc1a2b/arabicfmt)** — it helps other Arabic developers find it. Explore my **[other open-source projects](https://github.com/cc1a2b?tab=repositories)**, or open an [issue](https://github.com/cc1a2b/arabicfmt/issues) with ideas, bugs and feature requests.
 
 <div align="center">
-<sub>Built for Arabic-first software · <bdi lang="ar">وقفٌ للمطوّرين</bdi></sub>
+<sub>Built for Arabic-first software</sub>
 </div>
