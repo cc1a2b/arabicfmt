@@ -9,6 +9,10 @@ Once connected, an agent can format Saudi Riyal amounts, convert Gregorian dates
 spell numbers in Arabic, isolate foreign text for correct RTL rendering, validate IBANs and
 Saudi IDs, and more — by calling tools directly instead of guessing.
 
+It also knows the Unicode currency-sign transition as data: which of SAR (U+20C1),
+MVR (U+20C2), AED (U+20C3) and OMR (U+20C4) were encoded when, and what CSS makes
+them render.
+
 ## Run
 
 No install or build step required — it runs straight from npm over stdio:
@@ -66,6 +70,10 @@ Restart the client after editing, then ask the agent to use an arabicfmt tool.
 | Tool | Description |
 | --- | --- |
 | `format_currency` | Format a number as an Arabic currency amount with the correct symbol and precision (e.g. `1234.5 SAR` -> `١٬٢٣٤٫٥٠ ر.س`). |
+| `format_currency_range` | Format a price range with one shared symbol and precision (e.g. `1,000.00 – 5,000.00 ر.س`). |
+| `format_currency_parts` | Format an amount as typed JSON parts; the currency part reports its codepoint and whether it needs a webfont. |
+| `currency_transition` | Where a currency stands in the Unicode sign transition — `none` / `announced` / `encoded`, with dates and authority. |
+| `currency_sign_css` | Generate the scoped `@font-face` + `unicode-range` CSS that makes the new signs render. |
 | `spell_currency` | Spell a currency amount in full Arabic words with correct grammatical agreement. |
 | `format_hijri` | Format a Gregorian date as a Hijri date string (e.g. `٢٣ رمضان ١٤٤٧ هـ`). |
 | `to_hijri` | Convert a Gregorian date to Hijri components `{year, month, day}`. |

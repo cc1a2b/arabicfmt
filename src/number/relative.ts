@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from "../locale";
 import type { NumeralSystem } from "../types";
-import { toArabicDigits } from "./numerals";
+import { shapeDigits } from "./numerals";
 
 export interface FormatRelativeTimeOptions {
   /** BCP-47 locale. Default `"ar"`. */
@@ -78,8 +78,5 @@ export function formatRelativeTime(
     style,
   }).format(value, unit);
 
-  if (options.numerals === "arab") {
-    return toArabicDigits(formatted);
-  }
-  return formatted;
+  return shapeDigits(formatted, options.numerals ?? "latn");
 }

@@ -8,8 +8,12 @@
  *   2. minor-unit precision matches CLDR everywhere except documented overrides;
  *   3. the 3-decimal dinars and 0-decimal francs are exactly right;
  *   4. every Arab League country resolves to a currency with a curated symbol;
- *   5. each curated Unicode sign matches its declared codepoint, the SAR/AED/OMR
- *      signs are U+20C1 / U+20C3 / U+20C4, and none is the legacy U+FDFC.
+ *   5. each curated Unicode sign matches its declared codepoint, the
+ *      SAR/MVR/AED/OMR signs are U+20C1 / U+20C2 / U+20C3 / U+20C4, and none is
+ *      the legacy U+FDFC;
+ *   6. the transition registry mirrors the symbol table exactly, every sign has
+ *      a known Unicode release date that follows its announcement, and the
+ *      generated webfont CSS covers every sign.
  */
 import { createRequire } from "node:module";
 
@@ -24,6 +28,11 @@ import {
   getSymbolData,
   LEGACY_RIAL_LIGATURE,
 } from "../src/currency/symbols";
+import {
+  CURRENCY_TRANSITIONS,
+  signFontFaceCSS,
+  transitionStatus,
+} from "../src/currency/transition";
 
 const require = createRequire(import.meta.url);
 
@@ -97,6 +106,7 @@ for (const country of ARAB_LEAGUE_COUNTRIES) {
 // 5. Symbol integrity.
 const expectedSigns: Record<string, string> = {
   SAR: "U+20C1",
+  MVR: "U+20C2",
   AED: "U+20C3",
   OMR: "U+20C4",
 };
@@ -126,11 +136,57 @@ for (const data of Object.values(CURRENCY_SYMBOLS)) {
   }
 }
 
+// 6. The transition registry mirrors the symbol table, and its dates are sane.
+const signedCodes = Object.values(CURRENCY_SYMBOLS)
+  .filter((d) => d.unicode)
+  .map((d) => d.code)
+  .sort();
+check(
+  CURRENCY_TRANSITIONS.map((t) => t.code).sort().join(",") === signedCodes.join(","),
+  `transition registry ${CURRENCY_TRANSITIONS.map((t) => t.code).sort().join(",")} != signed currencies ${signedCodes.join(",")}`,
+);
+for (const transition of CURRENCY_TRANSITIONS) {
+  const announced = Date.parse(transition.announced);
+  const released = Date.parse(transition.unicodeReleased);
+  check(
+    !Number.isNaN(announced),
+    `${transition.code} announcement date ${transition.announced} is unparseable`,
+  );
+  check(
+    !Number.isNaN(released),
+    `${transition.code} has no known release date for Unicode ${transition.unicodeVersion}`,
+  );
+  check(
+    announced <= released,
+    `${transition.code} was announced (${transition.announced}) after Unicode encoded it (${transition.unicodeReleased})`,
+  );
+  check(
+    transitionStatus(transition.code, new Date(released)) === "encoded",
+    `${transition.code} should read as "encoded" on its Unicode release date`,
+  );
+  check(
+    transitionStatus(transition.code, new Date(announced)) === "announced",
+    `${transition.code} should read as "announced" on its announcement date`,
+  );
+  check(
+    transition.textSymbol.length > 0 && transition.sign.length > 0,
+    `${transition.code} is missing a text symbol or sign`,
+  );
+}
+
+const fontFaceCSS = signFontFaceCSS({ src: "/fonts/signs.woff2" });
+for (const transition of CURRENCY_TRANSITIONS) {
+  check(
+    fontFaceCSS.includes(transition.codepoint),
+    `generated @font-face is missing ${transition.code} (${transition.codepoint})`,
+  );
+}
+
 if (failures.length > 0) {
   console.error(`✗ currency data verification failed (${failures.length}):`);
   for (const f of failures) console.error(`  - ${f}`);
   process.exit(1);
 }
 console.log(
-  `✓ currency data verified against CLDR ${installedCldrVersion} (22 countries, ${Object.keys(CURRENCY_SYMBOLS).length} curated symbols).`,
+  `✓ currency data verified against CLDR ${installedCldrVersion} (22 countries, ${Object.keys(CURRENCY_SYMBOLS).length} curated symbols, ${CURRENCY_TRANSITIONS.length} Unicode signs: ${CURRENCY_TRANSITIONS.map((t) => `${t.code} ${t.codepoint}`).join(", ")}).`,
 );

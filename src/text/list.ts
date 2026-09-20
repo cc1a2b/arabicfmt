@@ -8,7 +8,7 @@
 
 import { DEFAULT_LOCALE } from "../locale";
 import type { NumeralSystem } from "../types";
-import { toArabicDigits } from "../number/numerals";
+import { shapeDigits } from "../number/numerals";
 
 export interface FormatListOptions {
   /** BCP-47 locale. Default `"ar"`. */
@@ -67,5 +67,5 @@ export function formatList(
     out = fallback(arr, type);
   }
 
-  return options.numerals === "arab" ? toArabicDigits(out) : out;
+  return shapeDigits(out, options.numerals ?? "latn");
 }

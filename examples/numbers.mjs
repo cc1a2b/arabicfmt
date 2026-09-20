@@ -9,6 +9,7 @@ import {
   parseNumber,
   parseCurrency,
   toArabicDigits,
+  toExtendedArabicDigits,
   toLatinDigits,
   ARABIC_INDIC_DIGITS,
   EXTENDED_ARABIC_INDIC_DIGITS,
@@ -36,10 +37,13 @@ console.log(formatPercent(0.42));
 console.log(formatPercent(0.42, { numerals: 'arab' }));
 // → ٤٢٪
 
-console.log('\n=== toArabicDigits / toLatinDigits ===');
-// Convert ASCII digits to Eastern Arabic-Indic and back.
-console.log(toArabicDigits('1234')); // → ١٢٣٤
-console.log(toLatinDigits('١٢٣٤'));  // → 1234
+console.log('\n=== toArabicDigits / toExtendedArabicDigits / toLatinDigits ===');
+// Convert ASCII digits to Eastern Arabic-Indic (Arab world), to Extended
+// Arabic-Indic (Persian/Urdu), and back again.
+console.log(toArabicDigits('1234'));         // → ١٢٣٤
+console.log(toExtendedArabicDigits('1234')); // → ۱۲۳۴
+console.log(toLatinDigits('١٢٣٤'));          // → 1234
+console.log(formatNumber(1234.5, { numerals: 'arabext' })); // → ۱٬۲۳۴٫۵
 
 console.log('\n=== parseNumber / parseCurrency ===');
 // Parse Arabic-formatted strings (Arabic-Indic digits + Arabic separators) back to JS numbers.

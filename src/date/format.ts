@@ -1,4 +1,4 @@
-import { toArabicDigits } from "../number/numerals";
+import { shapeDigits } from "../number/numerals";
 import type { NumeralSystem } from "../types";
 import type { HijriDate } from "./types";
 
@@ -95,10 +95,6 @@ export interface FormatHijriOptions {
   separator?: string;
 }
 
-function shape(value: string, numerals: NumeralSystem): string {
-  return numerals === "arab" ? toArabicDigits(value) : value;
-}
-
 /**
  * Format a {@link HijriDate} deterministically — same output on Node, browsers
  * and React Native, unlike `Intl`'s Hijri formatting which varies by engine.
@@ -116,7 +112,7 @@ export function formatHijriDate(
   const monthStyle = options.month ?? "long";
   const named = monthStyle === "long";
 
-  const dayStr = shape(
+  const dayStr = shapeDigits(
     options.day === "2-digit" ? String(hijri.day).padStart(2, "0") : String(hijri.day),
     numerals,
   );
@@ -126,7 +122,7 @@ export function formatHijriDate(
     const names = isArabic ? HIJRI_MONTHS_AR : HIJRI_MONTHS_EN;
     monthStr = names[hijri.month - 1] ?? String(hijri.month);
   } else {
-    monthStr = shape(
+    monthStr = shapeDigits(
       monthStyle === "2-digit"
         ? String(hijri.month).padStart(2, "0")
         : String(hijri.month),
@@ -134,7 +130,7 @@ export function formatHijriDate(
     );
   }
 
-  const yearStr = shape(String(hijri.year), numerals);
+  const yearStr = shapeDigits(String(hijri.year), numerals);
   const separator = options.separator ?? (named ? " " : "/");
   const order = options.order ?? "dmy";
   const fields =

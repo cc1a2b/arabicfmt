@@ -18,6 +18,8 @@ correct for all **22 Arab League countries**, with **zero dependencies** and ful
 </div>
 
 > **arabicfmt** is the only JavaScript library that handles the entire Arabic formatting stack in one zero-dependency package — currency symbols, number precision, Hijri/Islamic calendar dates, RTL bidirectional text, Arabic number-to-words and تفقيط — with full TypeScript types. Works in **Node, the browser, Deno, Bun and React Native**.
+>
+> **New in 0.1.5:** every currency sign from the Unicode 17.0/18.0 transition — SAR `U+20C1`, MVR `U+20C2`, AED `U+20C3`, OMR `U+20C4` — plus the tooling to actually render them: [typed parts](#rendering-the-new-signs), a [generated `@font-face`](#rendering-the-new-signs), [price ranges](#price-ranges) and a [date-aware transition registry](#the-transition-as-data).
 
 ```sh
 npm install arabicfmt
@@ -30,6 +32,8 @@ npm install arabicfmt
 | Problem | Other libraries | arabicfmt |
 |---|---|---|
 | Saudi riyal U+20C1 | Emits ﷼ (U+FDFC) — the **Iranian** rial | Correct U+20C1 with a safe text fallback |
+| The Unicode 18.0 signs (MVR/AED/OMR) | Unencoded, or still the old abbreviation | All four signs, plus `transitionStatus()` and a generated `@font-face` |
+| Styling a new sign | Regex the symbol back out of a formatted string | `formatCurrencyToParts()` — the sign is its own typed part |
 | Iraqi dinar (IQD) decimals | 0 (CLDR practical) | **3 decimals** — ISO 4217 legal standard |
 | Hijri date output | Varies between Node, Chrome, Safari, Hermes | Frozen Umm al-Qura tables — **identical on every engine** |
 | Arabic plurals | 1–2 forms; Arabic legally needs 6 | Full CLDR 6-form system (zero/one/two/few/many/other) |
@@ -78,6 +82,10 @@ Subpaths work too — e.g. `https://cdn.jsdelivr.net/npm/arabicfmt/dist/currency
 ```ts
 import {
   formatCurrency,      // correct symbol + precision for every Arab currency
+  formatCurrencyRange, // "1,000.00 – 5,000.00 ر.س"
+  formatCurrencyToParts, // typed parts — font-scope just the new Unicode sign
+  transitionStatus,    // "none" | "announced" | "encoded" for any date
+  signFontFaceCSS,     // the scoped @font-face the new signs need
   formatCompact,       // 1,200,000 → "1.2M" / "١٫٢ مليون"
   arabicToWords,       // 1234 → "ألف ومئتان وأربعة وثلاثون"
   spellCurrency,       // تفقيط: 1234.5 SAR → "...ريالاً وخمسون هللةً"
@@ -103,7 +111,14 @@ import { formatHijri, toHijri } from "arabicfmt/umalqura"; // deterministic Hijr
 formatCurrency(1.2,   { currency: "KWD" });                      // "1.200 د.ك"
 formatCurrency(1234,  { locale: "ar-SA", numerals: "arab" });    // "١٬٢٣٤٫٠٠ ر.س"
 formatCurrency(-500,  { currency: "SAR", accounting: true });    // "(500.00 ر.س)"
+formatCurrencyRange(1000, 5000, { currency: "SAR" });            // "1,000.00 – 5,000.00 ر.س"
 formatCompact(1_500_000, { locale: "ar", numerals: "arab" });    // "١٫٥ مليون"
+
+// The Unicode currency-sign transition, as data
+transitionStatus("AED");                          // "encoded" (Unicode 18.0)
+transitionStatus("AED", new Date("2026-01-01"));  // "announced"
+transitionStatus("KWD");                          // "none" — Kuwait has no sign
+signFontFaceCSS({ src: "/fonts/signs.woff2" });   // @font-face … unicode-range: U+20C1…U+20C4
 
 // Number to Arabic words
 arabicToWords(1234);                     // "ألف ومئتان وأربعة وثلاثون"
@@ -175,9 +190,11 @@ formatCurrency(1234.5, { currency: "SAR", symbolMode: "code" });
 | `text` | `ر.س` | `د.إ` | `ر.ع.` | Always the safe text symbol — renders everywhere |
 | `code` | `SAR` | `AED` | `OMR` | ISO code |
 
-> **Unicode 18.0 (September 2026):** the AED (U+20C3) and OMR (U+20C4) signs are now
-> `live`, and `auto` prefers them. Need maximum compatibility today? Use
-> `symbolMode: "text"`. The Saudi riyal keeps its safe text default by design.
+> **Unicode 18.0 (16 September 2026):** the AED (U+20C3), OMR (U+20C4) and MVR
+> (U+20C2) signs are now `live`, and `auto` prefers them. Need maximum
+> compatibility today? Use `symbolMode: "text"`. The Saudi riyal keeps its safe
+> text default by design. See
+> [the transition section](#unicode-currency-sign-transition) for the full table.
 
 ### Correct decimal precision — all 22 Arab League countries
 
@@ -220,17 +237,103 @@ getCurrencyInfo("SAR");
 // }
 ```
 
-### Webfont guide for U+20C1
+### Price ranges
+
+```ts
+import { formatCurrencyRange } from "arabicfmt/currency";
+
+formatCurrencyRange(1000, 5000, { currency: "SAR" })
+// "1,000.00 – 5,000.00 ر.س"     ← one symbol, the way ranges are actually set
+
+formatCurrencyRange(1000, 5000, { currency: "SAR", symbolEach: true })
+// "1,000.00 ر.س – 5,000.00 ر.س"
+
+formatCurrencyRange(1.2, 2, { currency: "KWD" })
+// "1.200 – 2.000 د.ك"           ← both ends share the currency's precision
+
+formatCurrencyRange(1000, 5000, { currency: "SAR", numerals: "arab" })
+// "١٬٠٠٠٫٠٠ – ٥٬٠٠٠٫٠٠ ر.س"
+
+formatCurrencyRange(50, 50, { currency: "AED" })   // "50.00 ⃃"  — collapses
+formatCurrencyRange(500, 100, { currency: "SAR" }) // throws: reversed range
+```
+
+Pass `rangeSeparator` for anything other than the default spaced en dash
+(`{ rangeSeparator: " إلى " }`), and `isolate: true` to wrap the whole range
+when it sits inside a mixed-direction sentence.
+
+### Rendering the new signs
+
+A brand-new sign needs two things a string cannot give you: a webfont scoped to
+its codepoint, and a way to wrap *only the symbol* in the element that uses that
+font. Both are one call each.
+
+**1. The parts API** — the currency counterpart to
+`Intl.NumberFormat.prototype.formatToParts`:
+
+```ts
+import { formatCurrencyToParts } from "arabicfmt/currency";
+
+formatCurrencyToParts(1234.5, { currency: "SAR", symbolMode: "new" });
+// [ { type: "integer",  value: "1" },
+//   { type: "group",    value: "," },
+//   { type: "integer",  value: "234" },
+//   { type: "decimal",  value: "." },
+//   { type: "fraction", value: "50" },
+//   { type: "literal",  value: " " },
+//   { type: "currency", value: "⃁", symbolMode: "new",
+//     codepoint: "U+20C1", needsFont: true } ]
+```
+
+`needsFont` is `true` exactly when the part holds a dedicated Unicode sign, so a
+component never has to pattern-match a finished string (which is how bidi bugs
+start):
+
+```tsx
+<span dir="rtl">
+  {formatCurrencyToParts(total, { currency: "SAR", symbolMode: "new" }).map(
+    (part, i) =>
+      part.needsFont
+        ? <span key={i} className="riyal-sign">{part.value}</span>
+        : <span key={i}>{part.value}</span>,
+  )}
+</span>
+```
+
+Part types mirror `Intl` (`integer`, `group`, `decimal`, `fraction`,
+`minusSign`, `plusSign`, `literal`) plus four arabicfmt adds: `currency`,
+`parenthesis` (accounting), `isolate` (bidi controls) and `rangeSeparator`.
+
+**2. The `@font-face` rule** — generated, with the `unicode-range` that makes it
+free on pages that never print a sign:
+
+```ts
+import { signFontFaceCSS } from "arabicfmt/currency";
+
+signFontFaceCSS({ src: "/fonts/currency-signs.woff2" });
+// @font-face {
+//   font-family: "Arabicfmt Signs";
+//   src: url("/fonts/currency-signs.woff2") format("woff2");
+//   font-display: swap;
+//   unicode-range: U+20C1, U+20C2, U+20C3, U+20C4;
+// }
+
+// Saudi riyal only, into a family name you already use:
+signFontFaceCSS({ src: "/fonts/riyal.woff2", family: "Riyal", currencies: ["SAR"] });
+// unicode-range: U+20C1;
+```
+
+Because the range is scoped to those codepoints, the browser downloads the font
+only when one of them is actually painted — body text is untouched. Put the
+family first in your stack and the rest falls through:
 
 ```css
-/* Scope the Saudi Riyal font to just that codepoint — zero impact on body text */
-@font-face {
-  font-family: "Riyal";
-  src: url("/fonts/saudi-riyal.woff2") format("woff2");
-  unicode-range: U+20C1;
-}
-:root { font-family: "Riyal", "Noto Naskh Arabic", sans-serif; }
+:root { font-family: "Arabicfmt Signs", "Noto Naskh Arabic", sans-serif; }
 ```
+
+`signUnicodeRange()` returns just the range string (`"U+20C1, U+20C2, U+20C3,
+U+20C4"`) for CSS-in-JS. Both helpers reject anything that would break out of
+the rule, so a URL from config can't inject CSS.
 
 ---
 
@@ -239,7 +342,7 @@ getCurrencyInfo("SAR");
 ```ts
 import {
   formatNumber, formatCompact, formatPercent,
-  toArabicDigits, toLatinDigits,
+  toArabicDigits, toExtendedArabicDigits, toLatinDigits,
   parseNumber, parseCurrency,
   arabicToWords,
   formatRelativeTime,
@@ -257,8 +360,13 @@ formatCompact(1_500_000, { locale: "ar", numerals: "arab" }); // "١٫٥ ملي�
 // Percent
 formatPercent(0.853, { locale: "en" });                    // "85.3%"
 
+// Three numeral systems: latn (default), arab, arabext
+formatNumber(1234.5, { numerals: "arab" });                // "١٬٢٣٤٫٥"  Eastern Arabic
+formatNumber(1234.5, { numerals: "arabext" });             // "۱٬۲۳۴٫۵"  Persian/Urdu
+
 // Transliteration
 toArabicDigits("Order #2026");                             // "Order #٢٠٢٦"
+toExtendedArabicDigits("2026");                            // "۲۰۲۶"
 toLatinDigits("٢٠٢٦");                                     // "2026"  (handles Persian ۰–۹ too)
 
 // Parsing — round-trip support
@@ -701,18 +809,18 @@ import { normalizeForSearch, arabicPlural, slugify } from "arabicfmt/text";
 import { isValidIBAN, isValidSaudiId }      from "arabicfmt/validate";
 ```
 
-Measured cost of each entry point (esbuild `--bundle --minify`, gzipped — v0.1.0):
+Measured cost of each entry point (esbuild `--bundle --minify`, gzipped — v0.1.5):
 
 | Import | What you get | min + gzip |
 |---|---|---|
-| `arabicfmt` | **everything below** | **11.4 kB** |
-| `arabicfmt/currency` | 22 currencies, تفقيط, Unicode transition data | 5.7 kB |
-| `arabicfmt/number` | words, ordinals, fractions, parse, duration, … | 3.5 kB |
-| `arabicfmt/umalqura` | 300 years of official Umm al-Qura tables | 2.2 kB |
-| `arabicfmt/text` | normalize, plurals, collation, lists, slugs | 1.6 kB |
-| `arabicfmt/date` | tabular Hijri core | 1.5 kB |
-| `arabicfmt/bidi` | direction detection + isolates | 0.7 kB |
-| `arabicfmt/validate` | IBAN + Saudi ID checksums | 0.6 kB |
+| `arabicfmt` | **everything below** | **13.2 kB** |
+| `arabicfmt/currency` | 22 currencies, تفقيط, parts, ranges, transition registry | 7.6 kB |
+| `arabicfmt/number` | words, ordinals, fractions, parse, duration, … | 3.6 kB |
+| `arabicfmt/umalqura` | 300 years of official Umm al-Qura tables | 2.4 kB |
+| `arabicfmt/text` | normalize, plurals, collation, lists, slugs | 1.7 kB |
+| `arabicfmt/date` | tabular Hijri core | 1.6 kB |
+| `arabicfmt/bidi` | direction detection + isolates | 0.8 kB |
+| `arabicfmt/validate` | IBAN + Saudi ID checksums | 0.7 kB |
 
 The complete Arabic formatting stack costs less than a single small image.
 
@@ -725,8 +833,8 @@ sections above and in the bundled TypeScript types.
 
 | Module | Functions |
 |---|---|
-| `arabicfmt/currency` | `formatCurrency` · `spellCurrency` · `getCurrencyInfo` · `resolveCurrencySymbol` |
-| `arabicfmt/number` | `formatNumber` · `formatPercent` · `formatCompact` · `parseNumber` · `parseCurrency` · `toArabicDigits` · `toLatinDigits` · `arabicToWords` · `arabicOrdinal` · `arabicFraction` · `countedNoun` · `formatDuration` · `formatFileSize` · `formatRelativeTime` |
+| `arabicfmt/currency` | `formatCurrency` · `formatCurrencyToParts` · `formatCurrencyRange` · `spellCurrency` · `getCurrencyInfo` · `resolveCurrencySymbol` · `transitionStatus` · `getCurrencyTransition` · `listCurrencyTransitions` · `signFontFaceCSS` · `signUnicodeRange` |
+| `arabicfmt/number` | `formatNumber` · `formatPercent` · `formatCompact` · `parseNumber` · `parseCurrency` · `toArabicDigits` · `toExtendedArabicDigits` · `toLatinDigits` · `shapeDigits` · `arabicToWords` · `arabicOrdinal` · `arabicFraction` · `countedNoun` · `formatDuration` · `formatFileSize` · `formatRelativeTime` |
 | `arabicfmt/umalqura` | `formatHijri` · `toHijri` · `fromHijri` · `gregorianToUmalqura` · `umalquraToGregorian` |
 | `arabicfmt/date` | `formatHijri` · `toHijri` · `fromHijri` *(tabular core)* |
 | `arabicfmt/text` | `stripTashkeel` · `removeTatweel` · `normalizeArabic` · `normalizeForSearch` · `arabicPlural` · `arabicPluralForm` · `sortArabic` · `compareArabic` · `createArabicCollator` · `formatList` · `transliterate` · `slugify` |
@@ -740,8 +848,9 @@ sections above and in the bundled TypeScript types.
 
 AI agents (Claude Desktop, Claude Code, Cursor) can call arabicfmt directly through the
 [`arabicfmt-mcp`](https://www.npmjs.com/package/arabicfmt-mcp) Model Context Protocol server —
-17 tools (`format_currency`, `spell_currency`, `format_hijri`, `arabic_to_words`,
-`isolate_foreign`, `validate_iban`, …). Add it to your client's `mcpServers` config:
+21 tools (`format_currency`, `format_currency_range`, `currency_transition`,
+`spell_currency`, `format_hijri`, `arabic_to_words`, `isolate_foreign`,
+`validate_iban`, …). Add it to your client's `mcpServers` config:
 
 ```json
 {
@@ -769,11 +878,11 @@ node currency.mjs   # or numbers / words / dates / text / bidi / validate
 | | |
 |---|---|
 | **Dependencies** | Zero runtime dependencies |
-| **Size** | ~11.4 kB min+gzip for the whole library; subpath imports from 0.6 kB |
+| **Size** | ~13.2 kB min+gzip for the whole library; subpath imports from 0.7 kB |
 | **Formats** | Dual ESM + CJS, full `.d.ts` / `.d.cts` types |
 | **Tree-shaking** | `"sideEffects": false` — pay only for what you import |
 | **Data source** | CLDR 48.2.0 + ICU — verified at build time, not hand-typed |
-| **Test coverage** | 194 tests — currency transition, precision, Hijri, plurals, words, tafqit, durations, IBAN/ID |
+| **Test coverage** | 242 tests — currency transition, parts, ranges, precision, Hijri, plurals, words, tafqit, durations, IBAN/ID |
 | **Platforms** | Node ≥ 18, all evergreen browsers, React Native / Hermes, Deno, Bun |
 | **Published with** | npm provenance (GitHub Actions attestation) |
 
@@ -781,20 +890,60 @@ node currency.mjs   # or numbers / words / dates / text / bidi / validate
 
 ## Unicode currency-sign transition
 
-**Live since Unicode 18.0 (September 2026)**
+**Complete as of Unicode 18.0 — released 16 September 2026**
 
-The UAE dirham (U+20C3) and Omani rial (U+20C4) signs are now **live**, and
-`symbolMode: "auto"` prefers them — completing the transition that began with
-the Saudi riyal sign (U+20C1) in Unicode 17.0. Because system-font coverage for
-brand-new signs still varies, `symbolMode: "text"` always returns the safe
-Arabic abbreviation (`د.إ`, `ر.ع.`), and the Saudi riyal keeps the text symbol
-as its `auto` default by design.
+Four currencies moved from an ad-hoc abbreviation to a dedicated Unicode sign in
+this cycle, and arabicfmt carries all four. Note what is *not* on this list:
+Kuwait has never issued a dinar sign — KWD is still `د.ك` / `KD`, and
+`transitionStatus("KWD")` returns `"none"`.
 
-| Currency | Sign | Unicode | `auto` default |
-|---|---|---|---|
-| Saudi riyal (SAR) | `⃁` U+20C1 | 17.0 (2025) | text `ر.س` (conservative) |
-| UAE dirham (AED) | `⃃` U+20C3 | 18.0 (2026) | **sign** |
-| Omani rial (OMR) | `⃄` U+20C4 | 18.0 (2026) | **sign** |
+| Currency | Sign | Codepoint | Unicode | Announced | `auto` default |
+|---|---|---|---|---|---|
+| Saudi riyal (SAR) | `⃁` | U+20C1 | 17.0 (9 Sep 2025) | SAMA, 20 Feb 2025 | text `ر.س` (conservative) |
+| Maldivian rufiyaa (MVR) | `⃂` | U+20C2 | 18.0 (16 Sep 2026) | MMA, 3 Jul 2022 | **sign** |
+| UAE dirham (AED) | `⃃` | U+20C3 | 18.0 (16 Sep 2026) | CBUAE, 27 Mar 2025 | **sign** |
+| Omani rial (OMR) | `⃄` | U+20C4 | 18.0 (16 Sep 2026) | CBO, 19 Nov 2025 | **sign** |
+
+The rufiyaa is not an Arab League currency, but it was encoded in the same batch
+and sits between the dirham and rial in the Currency Symbols block — carrying it
+keeps the range contiguous, so one `unicode-range` covers the whole transition.
+
+Because system-font coverage for brand-new signs still varies, `symbolMode:
+"text"` always returns the safe abbreviation, and the Saudi riyal keeps the text
+symbol as its `auto` default by design.
+
+### The transition as data
+
+Encoding is not rendering. A sign exists in the standard months or years before
+system fonts draw it, and every product shipping in that window has to decide
+what to print. That timeline is queryable:
+
+```ts
+import {
+  transitionStatus,
+  listCurrencyTransitions,
+  getCurrencyTransition,
+} from "arabicfmt/currency";
+
+transitionStatus("SAR")                          // "encoded"
+transitionStatus("SAR", new Date("2025-03-01"))  // "announced" — SAMA had it, Unicode didn't
+transitionStatus("AED", new Date("2026-01-01"))  // "announced"
+transitionStatus("KWD")                          // "none" — no sign exists
+
+listCurrencyTransitions({ unicodeVersion: "18.0" }).map((t) => t.code);
+// ["MVR", "AED", "OMR"]
+
+getCurrencyTransition("OMR");
+// {
+//   code: "OMR", sign: "⃄", codepoint: "U+20C4", name: "OMANI RIAL SIGN",
+//   unicodeVersion: "18.0", unicodeReleased: "2026-09-16",
+//   announced: "2025-11-19", authority: "Central Bank of Oman (CBO)",
+//   autoDefault: true, textSymbol: "ر.ع.",
+// }
+```
+
+`transitionStatus` takes a moment in time, so a historical invoice can be
+re-rendered with the symbol that was correct on its own date.
 
 ---
 

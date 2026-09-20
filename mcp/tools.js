@@ -14,6 +14,8 @@
 import { z } from 'zod';
 import {
   formatCurrency,
+  formatCurrencyRange,
+  formatCurrencyToParts,
   spellCurrency,
   formatHijri,
   toHijri,
@@ -30,6 +32,10 @@ import {
   slugify,
   isValidIBAN,
   isValidSaudiId,
+  getCurrencyTransition,
+  listCurrencyTransitions,
+  signFontFaceCSS,
+  transitionStatus,
 } from 'arabicfmt';
 
 // Shared option pieces ------------------------------------------------------
@@ -44,6 +50,13 @@ const numeralsOpt = z
   .optional()
   .describe(
     "Numeral system: 'latn' (1234), 'arab' (Eastern Arabic ١٢٣٤), or 'arabext' (Persian/Urdu ۱۲۳۴)."
+  );
+
+const genderOpt = z
+  .enum(['male', 'female'])
+  .optional()
+  .describe(
+    "Grammatical gender of the counted noun. Arabic numbers 3-9 invert it, so 'ثلاثة رجال' but 'ثلاث نساء'. Defaults to 'male'."
   );
 
 // Coerce an incoming ISO 8601 string (or epoch ms) into a Date.
@@ -76,6 +89,126 @@ export const tools = {
       if (locale !== undefined) options.locale = locale;
       if (numerals !== undefined) options.numerals = numerals;
       return formatCurrency(amount, options);
+    },
+  },
+
+  format_currency_range: {
+    description:
+      'Format a price range with one shared symbol and one shared precision (e.g. 1000-5000 SAR -> "1,000.00 – 5,000.00 ر.س"). Collapses to a single amount when both ends are equal.',
+    inputSchema: {
+      min: z.number().describe('Lower bound of the range.'),
+      max: z.number().describe('Upper bound of the range. Must be >= min.'),
+      currency: z
+        .string()
+        .optional()
+        .describe("ISO 4217 currency code, e.g. 'SAR', 'AED', 'KWD'."),
+      locale: localeOpt,
+      numerals: numeralsOpt,
+      symbolEach: z
+        .boolean()
+        .optional()
+        .describe('Repeat the symbol on both amounts instead of showing it once.'),
+      rangeSeparator: z
+        .string()
+        .optional()
+        .describe('Text between the amounts. Defaults to a spaced en dash " – ".'),
+    },
+    handler: async ({ min, max, currency, locale, numerals, symbolEach, rangeSeparator }) => {
+      const options = {};
+      if (currency !== undefined) options.currency = currency;
+      if (locale !== undefined) options.locale = locale;
+      if (numerals !== undefined) options.numerals = numerals;
+      if (symbolEach !== undefined) options.symbolEach = symbolEach;
+      if (rangeSeparator !== undefined) options.rangeSeparator = rangeSeparator;
+      return formatCurrencyRange(min, max, options);
+    },
+  },
+
+  format_currency_parts: {
+    description:
+      'Format a currency amount as typed parts (JSON) instead of a string, like Intl.NumberFormat.formatToParts. The "currency" part reports its codepoint and whether it is a brand-new Unicode sign that needs a webfont — use this when generating UI code that must style the symbol separately.',
+    inputSchema: {
+      amount: z.number().describe('The monetary amount to format.'),
+      currency: z
+        .string()
+        .optional()
+        .describe("ISO 4217 currency code, e.g. 'SAR', 'AED', 'KWD'."),
+      locale: localeOpt,
+      numerals: numeralsOpt,
+      symbolMode: z
+        .enum(['auto', 'new', 'text', 'code'])
+        .optional()
+        .describe(
+          "Symbol strategy: 'auto' (safe default), 'new' (dedicated Unicode sign), 'text' (Arabic abbreviation), 'code' (ISO code)."
+        ),
+    },
+    handler: async ({ amount, currency, locale, numerals, symbolMode }) => {
+      const options = {};
+      if (currency !== undefined) options.currency = currency;
+      if (locale !== undefined) options.locale = locale;
+      if (numerals !== undefined) options.numerals = numerals;
+      if (symbolMode !== undefined) options.symbolMode = symbolMode;
+      return JSON.stringify(formatCurrencyToParts(amount, options));
+    },
+  },
+
+  currency_transition: {
+    description:
+      'Report where a currency stands in the Unicode currency-sign transition: "none" (no sign exists), "announced" (a central bank issued one, Unicode has not encoded it yet) or "encoded". Covers SAR U+20C1 (Unicode 17.0) and MVR U+20C2 / AED U+20C3 / OMR U+20C4 (Unicode 18.0). Returns JSON with the sign, codepoint, issuing authority and dates. Omit "currency" to list every transition.',
+    inputSchema: {
+      currency: z
+        .string()
+        .optional()
+        .describe("ISO 4217 code, e.g. 'SAR'. Omit to list every currency with a sign."),
+      at: z
+        .string()
+        .optional()
+        .describe(
+          "Evaluate the status at this ISO 8601 date instead of today, e.g. '2026-01-01'."
+        ),
+    },
+    handler: async ({ currency, at }) => {
+      const when = at !== undefined ? toDate(at, 'at') : new Date();
+      if (currency === undefined) {
+        return JSON.stringify(
+          listCurrencyTransitions().map((t) => ({
+            ...t,
+            status: transitionStatus(t.code, when),
+          }))
+        );
+      }
+      const transition = getCurrencyTransition(currency);
+      return JSON.stringify({
+        code: currency.toUpperCase(),
+        status: transitionStatus(currency, when),
+        ...(transition ?? {}),
+      });
+    },
+  },
+
+  currency_sign_css: {
+    description:
+      'Generate the scoped @font-face CSS that makes the new Unicode currency signs render, using a unicode-range so the webfont downloads only when one of those codepoints is actually painted.',
+    inputSchema: {
+      src: z
+        .string()
+        .describe('URL of the font file, e.g. "/fonts/currency-signs.woff2".'),
+      family: z
+        .string()
+        .optional()
+        .describe('font-family the rule declares. Defaults to "Arabicfmt Signs".'),
+      currencies: z
+        .array(z.string())
+        .optional()
+        .describe(
+          "Restrict the unicode-range to these ISO codes, e.g. ['SAR']. Defaults to every sign."
+        ),
+    },
+    handler: async ({ src, family, currencies }) => {
+      const options = { src };
+      if (family !== undefined) options.family = family;
+      if (currencies !== undefined) options.currencies = currencies;
+      return signFontFaceCSS(options);
     },
   },
 
@@ -134,14 +267,11 @@ export const tools = {
       'Convert an integer to its full Arabic cardinal words (e.g. 1234567 -> "مليون ومئتان وأربعة وثلاثون ألفاً وخمسمئة وسبعة وستون").',
     inputSchema: {
       n: z.number().int().describe('The integer to convert to Arabic words.'),
-      feminine: z
-        .boolean()
-        .optional()
-        .describe('Use feminine grammatical gender for the counted noun.'),
+      gender: genderOpt,
     },
-    handler: async ({ n, feminine }) => {
+    handler: async ({ n, gender }) => {
       const options = {};
-      if (feminine !== undefined) options.feminine = feminine;
+      if (gender !== undefined) options.gender = gender;
       return arabicToWords(n, options);
     },
   },
@@ -151,14 +281,16 @@ export const tools = {
       'Convert an integer to its Arabic ordinal words (e.g. 25 -> "الخامس والعشرون").',
     inputSchema: {
       n: z.number().int().describe('The integer to convert to an Arabic ordinal.'),
-      feminine: z
+      gender: genderOpt,
+      definite: z
         .boolean()
         .optional()
-        .describe('Use feminine grammatical gender.'),
+        .describe("Include the definite article ال ('الخامس' vs 'خامس'). Defaults to true."),
     },
-    handler: async ({ n, feminine }) => {
+    handler: async ({ n, gender, definite }) => {
       const options = {};
-      if (feminine !== undefined) options.feminine = feminine;
+      if (gender !== undefined) options.gender = gender;
+      if (definite !== undefined) options.definite = definite;
       return arabicOrdinal(n, options);
     },
   },
@@ -215,16 +347,24 @@ export const tools = {
 
   format_duration: {
     description:
-      'Format a duration in milliseconds as natural Arabic words (e.g. 7500000 -> "ساعتان وخمس دقائق").',
+      'Format a duration as natural Arabic words with correct dual/plural agreement (e.g. 7500000 ms -> "ساعتان وخمس دقائق"). Always Arabic — the output is spelled, not localized.',
     inputSchema: {
-      value: z.number().describe('Duration in milliseconds.'),
-      locale: localeOpt,
-      numerals: numeralsOpt,
+      value: z.number().describe('Duration length, in the unit given by "input".'),
+      input: z
+        .enum(['ms', 's'])
+        .optional()
+        .describe("Unit of 'value': 'ms' (default) or 's'."),
+      largest: z
+        .number()
+        .int()
+        .min(1)
+        .optional()
+        .describe('Maximum number of units to include, largest first. Defaults to 2.'),
     },
-    handler: async ({ value, locale, numerals }) => {
+    handler: async ({ value, input, largest }) => {
       const options = {};
-      if (locale !== undefined) options.locale = locale;
-      if (numerals !== undefined) options.numerals = numerals;
+      if (input !== undefined) options.input = input;
+      if (largest !== undefined) options.largest = largest;
       return formatDuration(value, options);
     },
   },

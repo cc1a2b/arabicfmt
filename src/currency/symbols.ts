@@ -19,6 +19,8 @@ export interface UnicodeSymbol {
   readonly char: string;
   /** Human-readable codepoint label, e.g. "U+20C1". */
   readonly codepoint: string;
+  /** Formal Unicode character name, e.g. "SAUDI RIYAL SIGN". */
+  readonly name: string;
   /** Unicode version that introduces (or introduced) the sign. */
   readonly unicodeVersion: string;
   /** Month the introducing Unicode version is/was released. */
@@ -27,12 +29,16 @@ export interface UnicodeSymbol {
   readonly live: boolean;
   /**
    * Whether `symbolMode: "auto"` should prefer this sign. Since Unicode 18.0
-   * (September 2026) this is `true` for the AED and OMR signs. The Saudi
+   * (September 2026) this is `true` for the AED, OMR and MVR signs. The Saudi
    * riyal (U+20C1) deliberately stays `false` — it is the
    * most-traded Gulf currency, so its default remains the safe text symbol that
    * renders everywhere; opt into the sign with `symbolMode: "new"`.
    */
   readonly autoDefault: boolean;
+  /** Monetary authority that issued the sign. */
+  readonly authority: string;
+  /** ISO date (YYYY-MM-DD) on which that authority unveiled the sign. */
+  readonly announced: string;
 }
 
 export interface CurrencySymbolData {
@@ -47,33 +53,62 @@ export interface CurrencySymbolData {
 const SAR_UNICODE: UnicodeSymbol = {
   char: "⃁",
   codepoint: "U+20C1",
+  name: "SAUDI RIYAL SIGN",
   unicodeVersion: "17.0",
   released: "2025-09",
   live: true, // shipped in Unicode 17.0
   autoDefault: false, // most system fonts still lack the glyph
+  authority: "Saudi Central Bank (SAMA)",
+  announced: "2025-02-20",
 };
 
 const AED_UNICODE: UnicodeSymbol = {
   char: "⃃",
   codepoint: "U+20C3",
+  name: "UAE DIRHAM SIGN",
   unicodeVersion: "18.0",
   released: "2026-09",
   live: true, // shipped in Unicode 18.0
   autoDefault: true, // `auto` prefers the dedicated dirham sign (Unicode 18.0)
+  authority: "Central Bank of the UAE (CBUAE)",
+  announced: "2025-03-27",
 };
 
 const OMR_UNICODE: UnicodeSymbol = {
   char: "⃄",
   codepoint: "U+20C4",
+  name: "OMANI RIAL SIGN",
   unicodeVersion: "18.0",
   released: "2026-09",
   live: true, // shipped in Unicode 18.0
   autoDefault: true, // `auto` prefers the dedicated rial sign (Unicode 18.0)
+  authority: "Central Bank of Oman (CBO)",
+  announced: "2025-11-19",
+};
+
+/**
+ * The Maldivian rufiyaa is not an Arab League currency, but its sign was
+ * encoded in the same Unicode 18.0 batch as the dirham and rial signs and sits
+ * between them in the Currency Symbols block. Carrying it here keeps the
+ * transition registry complete — every sign a formatter has to learn in this
+ * cycle is U+20C1 through U+20C4.
+ */
+const MVR_UNICODE: UnicodeSymbol = {
+  char: "⃂",
+  codepoint: "U+20C2",
+  name: "RUFIYAA SIGN",
+  unicodeVersion: "18.0",
+  released: "2026-09",
+  live: true, // shipped in Unicode 18.0
+  autoDefault: true, // `auto` prefers the dedicated rufiyaa sign (Unicode 18.0)
+  authority: "Maldives Monetary Authority (MMA)",
+  announced: "2022-07-03",
 };
 
 /**
  * Curated symbols for the 22 Arab League currencies (plus ILS, which circulates
- * in the Palestinian territories). Keyed by ISO 4217 code.
+ * in the Palestinian territories, and MVR, which shares the Unicode 18.0
+ * currency-sign batch). Keyed by ISO 4217 code.
  */
 export const CURRENCY_SYMBOLS: Readonly<Record<string, CurrencySymbolData>> = {
   // Gulf — the transition currencies
@@ -103,6 +138,8 @@ export const CURRENCY_SYMBOLS: Readonly<Record<string, CurrencySymbolData>> = {
   DJF: { code: "DJF", text: "ف.ج" },
   KMF: { code: "KMF", text: "ف.ج.ق" },
   ILS: { code: "ILS", text: "₪" },
+  // Outside the Arab League — carried for the Unicode 18.0 sign batch
+  MVR: { code: "MVR", text: "Rf.", unicode: MVR_UNICODE },
 };
 
 /** Look up curated symbol data for an ISO 4217 code (case-insensitive). */

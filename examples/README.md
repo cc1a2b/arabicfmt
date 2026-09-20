@@ -6,7 +6,7 @@ Runnable, heavily-commented examples for every [arabicfmt](https://www.npmjs.com
 
 ```bash
 cd examples
-npm install        # installs arabicfmt ^0.1.2 from npm
+npm install        # installs arabicfmt ^0.1.5 from npm
 node currency.mjs  # or any file below
 ```
 
@@ -23,8 +23,8 @@ npm run all        # runs every example in sequence
 
 | File | Subpath import | Demonstrates |
 | --- | --- | --- |
-| [`currency.mjs`](./currency.mjs) | `arabicfmt/currency` | `formatCurrency`, `getCurrencyInfo`, `resolveCurrencySymbol`, `currencyDigits`, `currencyForLocale`, `currencyForRegion`, `countryCurrency`, `spellCurrency`, `getSymbolData`, `CURRENCY_SYMBOLS`, `CURRENCY_WORDS`, `ARAB_LEAGUE_COUNTRIES` |
-| [`numbers.mjs`](./numbers.mjs) | `arabicfmt/number` | `formatNumber`, `formatCompact`, `formatPercent`, `parseNumber`, `parseCurrency`, `toArabicDigits`, `toLatinDigits`, `ARABIC_INDIC_DIGITS`, `EXTENDED_ARABIC_INDIC_DIGITS` |
+| [`currency.mjs`](./currency.mjs) | `arabicfmt/currency` | `formatCurrency`, `formatCurrencyRange`, `formatCurrencyToParts`, `getCurrencyInfo`, `resolveCurrencySymbol`, `currencyDigits`, `currencyForLocale`, `currencyForRegion`, `countryCurrency`, `spellCurrency`, `getSymbolData`, `transitionStatus`, `listCurrencyTransitions`, `signFontFaceCSS`, `CURRENCY_SYMBOLS`, `CURRENCY_WORDS`, `ARAB_LEAGUE_COUNTRIES` |
+| [`numbers.mjs`](./numbers.mjs) | `arabicfmt/number` | `formatNumber`, `formatCompact`, `formatPercent`, `parseNumber`, `parseCurrency`, `toArabicDigits`, `toExtendedArabicDigits`, `toLatinDigits`, `ARABIC_INDIC_DIGITS`, `EXTENDED_ARABIC_INDIC_DIGITS` |
 | [`words.mjs`](./words.mjs) | `arabicfmt/number` | `arabicToWords`, `arabicOrdinal`, `arabicFraction`, `countedNoun` |
 | [`dates.mjs`](./dates.mjs) | `arabicfmt/date`, `arabicfmt/umalqura` | `formatHijri`, `toHijri`, `fromHijri`, `formatHijriDate`, Umm al-Qura conversions, month/era tables |
 | [`text.mjs`](./text.mjs) | `arabicfmt/text` | `normalizeArabic`, `stripTashkeel`, `removeTatweel`, `normalizeForSearch`, `arabicPluralForm`, `arabicPlural`, `sortArabic`, `compareArabic`, `formatList`, `slugify`, `transliterate` |

@@ -3,7 +3,9 @@ export type { FormatNumberOptions } from "./format";
 export {
   ARABIC_INDIC_DIGITS,
   EXTENDED_ARABIC_INDIC_DIGITS,
+  shapeDigits,
   toArabicDigits,
+  toExtendedArabicDigits,
   toLatinDigits,
 } from "./numerals";
 export { parseNumber, parseCurrency } from "./parse";

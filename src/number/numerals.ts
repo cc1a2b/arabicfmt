@@ -1,3 +1,5 @@
+import type { NumeralSystem } from "../types";
+
 // Built from codepoints so the source stays unambiguous.
 const cc = String.fromCharCode;
 
@@ -16,6 +18,26 @@ export const EXTENDED_ARABIC_INDIC_DIGITS: readonly string[] = Array.from(
 /** Convert Western digits (0-9) in `input` to Eastern Arabic-Indic digits. */
 export function toArabicDigits(input: string): string {
   return input.replace(/[0-9]/g, (d) => ARABIC_INDIC_DIGITS[Number(d)]!);
+}
+
+/**
+ * Convert Western digits (0-9) in `input` to Extended Arabic-Indic digits
+ * (۰-۹, U+06F0–U+06F9) — the forms used in Persian and Urdu typography.
+ */
+export function toExtendedArabicDigits(input: string): string {
+  return input.replace(/[0-9]/g, (d) => EXTENDED_ARABIC_INDIC_DIGITS[Number(d)]!);
+}
+
+/**
+ * Shape the digits already present in `input` for `numerals`. Used by the
+ * formatters that build their output as text rather than through `Intl`
+ * (Hijri dates, relative time, lists), so every module shapes digits the
+ * same way.
+ */
+export function shapeDigits(input: string, numerals: NumeralSystem): string {
+  if (numerals === "arab") return toArabicDigits(input);
+  if (numerals === "arabext") return toExtendedArabicDigits(input);
+  return input;
 }
 
 const EASTERN_DIGITS = new RegExp(

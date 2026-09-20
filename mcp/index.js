@@ -14,7 +14,7 @@ import { tools } from './tools.js';
 export function createServer() {
   const server = new McpServer({
     name: 'arabicfmt-mcp',
-    version: '0.1.0',
+    version: '0.1.2',
   });
 
   for (const [name, def] of Object.entries(tools)) {

@@ -15,6 +15,6 @@
     "all": "node currency.mjs && node numbers.mjs && node words.mjs && node dates.mjs && node text.mjs && node bidi.mjs && node validate.mjs"
   },
   "dependencies": {
-    "arabicfmt": "^0.1.2"
+    "arabicfmt": "^0.1.5"
   }
 }

@@ -4,6 +4,8 @@
 // Run with:  node currency.mjs
 import {
   formatCurrency,
+  formatCurrencyRange,
+  formatCurrencyToParts,
   getCurrencyInfo,
   resolveCurrencySymbol,
   currencyDigits,
@@ -12,6 +14,9 @@ import {
   countryCurrency,
   spellCurrency,
   getSymbolData,
+  listCurrencyTransitions,
+  signFontFaceCSS,
+  transitionStatus,
   CURRENCY_SYMBOLS,
   CURRENCY_WORDS,
   ARAB_LEAGUE_COUNTRIES,
@@ -64,6 +69,32 @@ console.log('\n=== CURRENCY_WORDS ===');
 // Grammatical word forms used when spelling currency amounts.
 console.log(CURRENCY_WORDS['SAR']);
 // → { major: { gender: 'male', singular: 'ريال', ... }, minor: { ... } }
+
+console.log('\n=== formatCurrencyRange ===');
+// A price range shares one symbol and one precision.
+console.log(formatCurrencyRange(1000, 5000, { currency: 'SAR' }));
+// → 1,000.00 – 5,000.00 ر.س
+console.log(formatCurrencyRange(1.2, 2, { currency: 'KWD' }));
+// → 1.200 – 2.000 د.ك
+
+console.log('\n=== formatCurrencyToParts ===');
+// Typed parts, so a UI can style just the symbol. needsFont marks a brand-new
+// Unicode sign that most system fonts still cannot draw.
+console.log(formatCurrencyToParts(1234.5, { currency: 'SAR', symbolMode: 'new' }));
+// → [ ..., { type: 'currency', value: '⃁', symbolMode: 'new', codepoint: 'U+20C1', needsFont: true } ]
+
+console.log('\n=== the Unicode currency-sign transition ===');
+// Status is evaluated at a moment in time: none -> announced -> encoded.
+console.log(transitionStatus('SAR'));                            // → encoded
+console.log(transitionStatus('AED', new Date('2026-01-01')));     // → announced
+console.log(transitionStatus('KWD'));                            // → none (Kuwait has no sign)
+console.log(listCurrencyTransitions({ unicodeVersion: '18.0' }).map((t) => t.code));
+// → [ 'MVR', 'AED', 'OMR' ]
+
+console.log('\n=== signFontFaceCSS ===');
+// The scoped @font-face that makes the new signs render, downloading the font
+// only on pages that actually paint one of those codepoints.
+console.log(signFontFaceCSS({ src: '/fonts/currency-signs.woff2' }));
 
 console.log('\n=== ARAB_LEAGUE_COUNTRIES ===');
 // All 22 Arab League members with English + Arabic names.

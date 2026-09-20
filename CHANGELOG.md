@@ -4,6 +4,63 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.5] — 2026-09-20
+
+Unicode 18.0 shipped on 16 September 2026 with three new currency signs. This
+release completes arabicfmt's coverage of that batch and adds the tooling a
+product actually needs while fonts catch up.
+
+### Added
+
+- **The Unicode 18.0 sign batch is complete.** `U+20C2 RUFIYAA SIGN` (MVR) joins
+  the dirham and rial signs, so every currency sign encoded in this transition —
+  SAR U+20C1 (Unicode 17.0), MVR U+20C2, AED U+20C3, OMR U+20C4 (Unicode 18.0) —
+  is curated, verified and formattable. Each sign now also carries its formal
+  Unicode name, issuing authority and announcement date, exposed through
+  `getCurrencyInfo()`.
+  *(Kuwait has no currency sign: KWD remains `د.ك` / `KD`.)*
+- **`formatCurrencyToParts()`** — the currency counterpart to
+  `Intl.NumberFormat.prototype.formatToParts`. The `currency` part reports its
+  `codepoint` and `needsFont`, so a UI can wrap exactly the new sign in a
+  font-scoped element instead of splitting a finished string with a regex.
+  `formatCurrency()` is now built on it, so string and parts can never diverge.
+- **Transition registry** — `CURRENCY_TRANSITIONS`, `getCurrencyTransition()`,
+  `listCurrencyTransitions()` and `transitionStatus(code, at)`, which answers
+  `"none"` / `"announced"` / `"encoded"` for any moment in time (the gap between
+  a central bank unveiling a sign and Unicode encoding it is 7–18 months, and
+  software shipped in that window has to choose a symbol).
+- **`signFontFaceCSS()` / `signUnicodeRange()`** — generate the scoped
+  `@font-face` rule with the `unicode-range` that keeps a currency webfont from
+  downloading on pages that never print the sign. Rejects values that would
+  break out of the rule.
+- **`formatCurrencyRange()`** — price ranges with one shared symbol and one
+  shared precision, so a range can never render `1,200.5 – 1,300.00`.
+- **`numerals: "arabext"`** — Extended Arabic-Indic digits (۰۱۲۳, Persian/Urdu)
+  as a third numeral system across every formatter, plus
+  `toExtendedArabicDigits()` and `shapeDigits()`.
+
+### Fixed
+
+- `formatCurrency()` with `accounting: true` and `showSymbol: false` dropped the
+  negative sign entirely (`-5` formatted as `5.00`). It now renders `(5.00)`.
+
+### MCP
+
+- `arabicfmt-mcp` 0.1.2 adds `format_currency_range`, `format_currency_parts`,
+  `currency_transition` and `currency_sign_css` (21 tools).
+- Fixed `arabic_to_words` / `arabic_ordinal`, which passed a `feminine` flag the
+  library never read — they now take `gender: "male" | "female"`, and
+  `arabic_ordinal` takes `definite`. `format_duration` no longer advertises
+  `locale` / `numerals` options it did not support, and takes `input` / `largest`
+  instead.
+
+### Verified
+
+- The build-time data verifier now also asserts that the transition registry
+  mirrors the symbol table, that every announcement date precedes its Unicode
+  release date, that status transitions land on the right day, and that the
+  generated `@font-face` covers every sign.
+
 ## [0.1.4] — 2026-07-06
 
 MCP and release-infrastructure release; the library's runtime behavior and

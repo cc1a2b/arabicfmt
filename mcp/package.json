@@ -1,6 +1,6 @@
 {
   "name": "arabicfmt-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "mcpName": "io.github.cc1a2b/arabicfmt-mcp",
   "description": "Model Context Protocol (MCP) server exposing arabicfmt's Arabic-first formatting tools (currency, Hijri dates, numbers, bidi text, validation) to AI agents like Claude and Cursor.",
   "keywords": [
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "arabicfmt": "^0.1.3",
+    "arabicfmt": "^0.1.5",
     "zod": "^3.25 || ^4.0"
   }
 }
